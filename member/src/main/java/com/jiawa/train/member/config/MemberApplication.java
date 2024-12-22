@@ -8,6 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
+import java.lang.reflect.Proxy;
+
 @SpringBootApplication
 @ComponentScan("com.jiawa")
 public class MemberApplication {

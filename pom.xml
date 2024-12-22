@@ -23,6 +23,7 @@
     </developers>
     <modules>
         <module>member</module>
+        <module>common</module>
     </modules>
     <scm>
         <connection/>
@@ -42,6 +43,23 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.70</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.8.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
