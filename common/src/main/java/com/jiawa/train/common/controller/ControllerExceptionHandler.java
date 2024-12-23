@@ -1,5 +1,7 @@
 package com.jiawa.train.common.controller;
 
+import cn.hutool.log.Log;
+import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.resp.CommonResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ public class ControllerExceptionHandler {
 
     /**
      * 所有异常统一处理
+     * 做一个兜底异常
      * @param e
      * @return
      */
@@ -28,6 +31,19 @@ public class ControllerExceptionHandler {
         LOG.error("系统异常：", e);
         commonResp.setSuccess(false);
         commonResp.setMessage("系统出现异常，请联系管理员");
+        return commonResp;
+    }
+
+    /**
+     * 自定义业务的异常处理
+     */
+    @ExceptionHandler(value = BusinessException.class)
+    @ResponseBody
+    public  CommonResp businessExceptionHandler(BusinessException e) {
+        LOG.error("系统异常：{}",e.getE().getDesc());
+        CommonResp commonResp = new CommonResp();
+        commonResp.setSuccess(false);
+        commonResp.setMessage(e.getE().getDesc());
         return commonResp;
     }
 }
