@@ -41,7 +41,7 @@ public class MemberService {
         }
         //创建一个会员实例
         Member member = new Member();
-        member.setId(1L);
+        member.setId(System.currentTimeMillis());
         member.setMobile(registerReq.getMobile());
         memberMapper.insert(member);
         return member.getId();
