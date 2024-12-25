@@ -1,8 +1,10 @@
 package com.jiawa.train.member.domain;
 
-public class Member {
-    private Long id;
+import jakarta.validation.constraints.NotBlank;
 
+public class Member {
+
+    private Long id;
     private String mobile;
 
     public Long getId() {

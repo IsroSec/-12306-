@@ -30,7 +30,7 @@ public class MemberService {
         return Math.toIntExact(memberMapper.countByExample(null));
     }
 
-    public Long register(MemberRegisterReq registerReq) {
+    public long register(MemberRegisterReq registerReq) {
         //example是查询条件
         MemberExample memberExample = new MemberExample();
         //createCriteria相当于where条件

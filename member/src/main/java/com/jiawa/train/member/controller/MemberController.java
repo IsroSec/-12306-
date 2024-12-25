@@ -4,6 +4,7 @@ import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.member.req.MemberRegisterReq;
 import com.jiawa.train.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class MemberController {
 
 
     @PostMapping("/register")
-    public CommonResp<Long> register(MemberRegisterReq registerReq){
+    public CommonResp<Long> register(@Validated MemberRegisterReq registerReq){
         return new CommonResp<>(memberService.register(registerReq));
     }
 }
