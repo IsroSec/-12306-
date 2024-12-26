@@ -10,3 +10,9 @@ POST http://localhost:8001/member/member/send-code
 Content-Type: application/x-www-form-urlencoded
 
 mobile =12345678910
+
+###
+POST http://localhost:8001/member/member/login
+Content-Type: application/x-www-form-urlencoded
+
+mobile =12345678910&code=8888
