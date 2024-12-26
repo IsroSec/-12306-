@@ -2,6 +2,7 @@ package com.jiawa.train.member.controller;
 
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.member.req.MemberRegisterReq;
+import com.jiawa.train.member.req.MemberSendCodeReq;
 import com.jiawa.train.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -33,5 +34,11 @@ public class MemberController {
     @PostMapping("/register")
     public CommonResp<Long> register(@Validated MemberRegisterReq registerReq){
         return new CommonResp<>(memberService.register(registerReq));
+    }
+
+    @PostMapping("/send-code")
+    public CommonResp sendCode(@Validated MemberSendCodeReq sendCodeReq){
+        memberService.sendCode(sendCodeReq);
+        return new CommonResp();
     }
 }
