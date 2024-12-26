@@ -5,6 +5,7 @@ import store from './store'
 import Ant from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css';
 import * as Icon from '@ant-design/icons-vue'
+import axios from "axios";
 
 
 const app=createApp(App)
@@ -16,3 +17,15 @@ const icons= Icon;
 for (const i in icons){
     app.component(i,icons[i])
 }
+axios.interceptors.request.use(config=>{
+    console.log(config)
+    return config
+},error => {
+    return Promise.reject(error)
+})
+axios.interceptors.response.use(response=>{
+    console.log(response)
+    return response
+},error=>{
+    return Promise.reject(error)
+})
