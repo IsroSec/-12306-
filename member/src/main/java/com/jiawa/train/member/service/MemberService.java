@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
+import com.jiawa.train.common.util.JwtUtil;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.member.config.MemberApplication;
 import com.jiawa.train.member.domain.Member;
@@ -92,9 +93,7 @@ public class MemberService {
             throw new BusinessException(BusinessExceptionEnum.MEMBER_MOBILE_CODE_ERROR);
         }
         MemberLoginResp memberLoginResp = BeanUtil.copyProperties(members, MemberLoginResp.class);
-        String saultKey="Jiawa12306";
-        Map<String, Object> map = BeanUtil.beanToMap(memberLoginResp);
-        String token = JWTUtil.createToken(map, saultKey.getBytes());
+        String token = JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile());
         memberLoginResp.setToken(token);
         return memberLoginResp;
     }

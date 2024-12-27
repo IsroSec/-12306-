@@ -70,8 +70,8 @@ export default defineComponent({
 
     const login = () => {
       axios.post("/member/member/login",
-          loginForm).then(response=>{
-            const data=response.data;
+          loginForm).then((response)=>{
+            let data=response.data;
             if (data.success){
               notification.success({ description: '登录成功！' });
               console.log("登陆成功")
