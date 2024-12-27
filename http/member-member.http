@@ -13,6 +13,9 @@ mobile =12345678910
 
 ###
 POST http://localhost:8001/member/member/login
-Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
 
-mobile =12345678910&code=8888
+{
+  "mobile": "12345678910",
+  "code": "8888"
+}
