@@ -2,6 +2,7 @@ package com.jiawa.train.member.controller;
 
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
+import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.member.domain.Passenger;
 import com.jiawa.train.member.req.PassengerQueryReq;
 import com.jiawa.train.member.req.PassengerSaveReq;
@@ -38,7 +39,7 @@ public class PassengerController {
     }
 
     @PostMapping("/query-list")
-    public CommonResp<List<Passenger>> queryList(@Valid @RequestBody PassengerQueryReq passengerQueryReq) {
+    public CommonResp<PageResp<Passenger>> queryList(@Valid  PassengerQueryReq passengerQueryReq) {
         passengerQueryReq.setMemberId(LoginMemberContext.getId());
         return new CommonResp<>(passengerService.queryList(passengerQueryReq));
     }
