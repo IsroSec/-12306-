@@ -40,11 +40,16 @@ public class PassengerService {
     public void save(PassengerSaveReq passengerSaveReq) {
         Passenger passenger = BeanUtil.copyProperties(passengerSaveReq, Passenger.class);
         DateTime now = DateTime.now();
-        passenger.setMemberId(LoginMemberContext.getId());
-        passenger.setId(SnowUtil.getSnowflakeNextId());
-        passenger.setCreateTime(now);
-        passenger.setUpdateTime(now);
-        passengerMapper.insert(passenger);
+        if(ObjectUtil.isNull(passenger.getId())) {
+            passenger.setMemberId(LoginMemberContext.getId());
+            passenger.setId(SnowUtil.getSnowflakeNextId());
+            passenger.setCreateTime(now);
+            passenger.setUpdateTime(now);
+            passengerMapper.insert(passenger);
+        }else {
+            passenger.setUpdateTime(now);
+            passengerMapper.updateByPrimaryKey(passenger);
+        }
     }
 
     public PageResp<Passenger> queryList(PassengerQueryReq passengerQueryReq) {
