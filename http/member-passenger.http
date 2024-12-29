@@ -6,9 +6,17 @@ Content-Type: application/json
 token: {{token}}
 
 {
-  "name": "8888",
-  "idCard": "21312312",
+  "name": "奚侃琦",
+  "idCard": "330225",
   "type": "1"
 }
 
 ###
+POST http://localhost:8000/member/passenger/query-list
+Content-Type: application/json
+token: {{token}}
+
+{
+
+}
+

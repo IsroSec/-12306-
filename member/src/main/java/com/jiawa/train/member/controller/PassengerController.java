@@ -1,6 +1,9 @@
 package com.jiawa.train.member.controller;
 
+import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
+import com.jiawa.train.member.domain.Passenger;
+import com.jiawa.train.member.req.PassengerQueryReq;
 import com.jiawa.train.member.req.PassengerSaveReq;
 import com.jiawa.train.member.service.PassengerService;
 import jakarta.validation.Valid;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * ClassName: PassengerController
@@ -30,5 +35,11 @@ public class PassengerController {
     public CommonResp<Object> save(@Valid @RequestBody PassengerSaveReq passengerSaveReq) {
         passengerService.save(passengerSaveReq);
         return new CommonResp();
+    }
+
+    @PostMapping("/query-list")
+    public CommonResp<List<Passenger>> queryList(@Valid @RequestBody PassengerQueryReq passengerQueryReq) {
+        passengerQueryReq.setMemberId(LoginMemberContext.getId());
+        return new CommonResp<>(passengerService.queryList(passengerQueryReq));
     }
 }
