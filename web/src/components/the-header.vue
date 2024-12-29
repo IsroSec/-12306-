@@ -11,9 +11,8 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
     >
-      <a-menu-item key="1">nav 1</a-menu-item>
-      <a-menu-item key="2">nav 2</a-menu-item>
-      <a-menu-item key="3">nav 3</a-menu-item>
+      <a-menu-item key="/welcome"><router-link to="/welcome">欢迎</router-link></a-menu-item>
+      <a-menu-item key="/passenger"><router-link to="/passenger">乘车人</router-link></a-menu-item>
     </a-menu>
   </a-layout-header>
 </template>
