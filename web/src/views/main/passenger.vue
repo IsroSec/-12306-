@@ -21,6 +21,8 @@
 </template>
 <script>
 import { defineComponent,ref } from 'vue';
+import axios from "axios";
+import {notification} from "ant-design-vue";
 
 export default defineComponent({
   setup() {
@@ -38,7 +40,15 @@ export default defineComponent({
       visible.value=true;
     }
     const handleOk=()=>{
-      visible.value=false;
+      axios.post("/member/passenger/save",passenger.value).then(response=>{
+        let data=response.data
+        if (data.success){
+          notification.success({ description: '新增乘客成功！' })
+          visible.value=false;
+        }else {
+          notification.error({ description: data.message })
+        }
+      })
     }
 
     return {
