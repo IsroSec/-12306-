@@ -1,0 +1,13 @@
+
+
+###
+POST http://localhost:8001/member/passenger/save
+Content-Type: application/json
+
+{
+  "name": "8888",
+  "idCard": "21312312",
+  "type": "1"
+}
+
+###
