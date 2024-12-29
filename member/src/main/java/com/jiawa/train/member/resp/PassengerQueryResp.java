@@ -11,13 +11,13 @@ public class PassengerQueryResp {
     /**
      * id
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using= ToStringSerializer.class)//这里也该了
     private Long id;
 
     /**
      * 会员id
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using= ToStringSerializer.class)//这里也改了
     private Long memberId;
 
     /**
