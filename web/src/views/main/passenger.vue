@@ -1,7 +1,7 @@
 <template>
   <p>
     <a-space>
-      <a-button type="primary" @click="showModel">新增</a-button>
+      <a-button type="primary" @click="onAdd">新增</a-button>
       <a-button type="primary" @click="handleQuery()">刷新</a-button>
     </a-space>
   </p>
@@ -10,7 +10,15 @@
            :pagination="pagination"
            @change="handleTableChange"
            :loading="loading"
-  ></a-table>
+  >
+    <template #bodyCell="{column,record}">
+      <template v-if="column.dataIndex === 'operation'">
+        <a-space>
+          <a @click="onEdit(record)">编辑</a>
+        </a-space>
+      </template>
+    </template>
+  </a-table>
   <a-modal v-model:visible="visible" title="新增乘客" @ok="handleOk"
   ok-text="保存" cancel-text="取消">
     <a-form :model="passenger" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
@@ -78,9 +86,14 @@ export default defineComponent({
       pageSize: 2,
     });
     const loading=ref(false);
-    const showModel=()=>{
+    const onAdd=()=>{
+      passenger.value={}
       visible.value=true;
     }
+    const onEdit=(record)=>{
+      passenger.value=window.Tool.copy(record);
+      visible.value=true;
+}
     const handleOk=()=>{
       axios.post("/member/passenger/save",passenger.value).then(response=>{
         let data=response.data
@@ -138,14 +151,15 @@ export default defineComponent({
     return {
       passenger,
       visible,
-      showModel,
+      onAdd,
       handleOk,
       passengers,
       columns,
       pagination,
       handleTableChange,
       handleQuery,
-      loading
+      loading,
+      onEdit
     };
   },
 });
