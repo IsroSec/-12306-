@@ -18,13 +18,19 @@
 </template>
 
 <script>
-import {defineComponent, ref} from "vue";
+import {defineComponent, ref, watch} from "vue";
 import store from "@/store";
+import Router from "@/router";
 export default defineComponent({
   name: 'the-header',
   data() {
     const selectedKeys1 = ref(['1']);
     let member= store.state.member;
+    watch(()=>Router.currentRoute.value.path, (newValue)=>{
+      console.log(newValue);
+      selectedKeys1.value=[]
+      selectedKeys1.value.push(newValue)
+    }, {immediate: true})
     return {
       member,
     selectedKeys1

@@ -46,12 +46,18 @@
 </template>
 
 <script>
-import {defineComponent, ref} from "vue";
+import {defineComponent, ref, watch} from "vue";
+import Router from "@/router";
 export default defineComponent({
   name: 'the-sider',
   data() {
-    const selectedKeys2 = ref(['1']);
+    const selectedKeys2 = ref([]);
     const openKeys = ref(['sub1']);
+    watch(()=>Router.currentRoute.value.path, (newValue)=>{
+      console.log(newValue);
+      selectedKeys2.value=[]
+      selectedKeys2.value.push(newValue)
+    }, {immediate: true})
     return {
       selectedKeys2,
       openKeys
