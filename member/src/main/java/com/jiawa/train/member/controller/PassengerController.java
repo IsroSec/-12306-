@@ -10,10 +10,7 @@ import com.jiawa.train.member.service.PassengerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,7 +35,7 @@ public class PassengerController {
         return new CommonResp();
     }
 
-    @PostMapping("/query-list")
+    @GetMapping("/query-list")
     public CommonResp<PageResp<Passenger>> queryList(@Valid  PassengerQueryReq passengerQueryReq) {
         passengerQueryReq.setMemberId(LoginMemberContext.getId());
         return new CommonResp<>(passengerService.queryList(passengerQueryReq));
