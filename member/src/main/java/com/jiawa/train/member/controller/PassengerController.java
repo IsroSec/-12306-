@@ -6,6 +6,7 @@ import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.member.domain.Passenger;
 import com.jiawa.train.member.req.PassengerQueryReq;
 import com.jiawa.train.member.req.PassengerSaveReq;
+import com.jiawa.train.member.resp.PassengerQueryResp;
 import com.jiawa.train.member.service.PassengerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,13 @@ public class PassengerController {
     }
 
     @GetMapping("/query-list")
-    public CommonResp<PageResp<Passenger>> queryList(@Valid  PassengerQueryReq passengerQueryReq) {
+    public CommonResp<PageResp<PassengerQueryResp>> queryList(@Valid  PassengerQueryReq passengerQueryReq) {
         passengerQueryReq.setMemberId(LoginMemberContext.getId());
         return new CommonResp<>(passengerService.queryList(passengerQueryReq));
+    }
+    @DeleteMapping("/delete/{id}")
+    public CommonResp<Object> delete(@PathVariable Long id) {
+        passengerService.delete(id);
+        return new CommonResp<>();
     }
 }

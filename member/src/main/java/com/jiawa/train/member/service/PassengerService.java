@@ -52,7 +52,7 @@ public class PassengerService {
         }
     }
 
-    public PageResp<Passenger> queryList(PassengerQueryReq passengerQueryReq) {
+    public PageResp<PassengerQueryResp> queryList(PassengerQueryReq passengerQueryReq) {
         PassengerExample passengerExample = new PassengerExample();
         passengerExample.setOrderByClause("id desc");
         PassengerExample.Criteria criteria = passengerExample.createCriteria();
@@ -67,10 +67,13 @@ public class PassengerService {
 
         LOG.info("总行数：{}", passengerPageInfo.getTotal());
         LOG.info("总页数：{}", passengerPageInfo.getPages());
-        PassengerQueryResp passengerQueryResp = BeanUtil.copyProperties(passengerPageInfo, PassengerQueryResp.class);
-        PageResp<Passenger> passengerQueryRespPageResp = new PageResp<>();
+        List<PassengerQueryResp> list = BeanUtil.copyToList(passengers, PassengerQueryResp.class);
+        PageResp<PassengerQueryResp> passengerQueryRespPageResp = new PageResp<>();
         passengerQueryRespPageResp.setTotal(passengerPageInfo.getTotal());
-        passengerQueryRespPageResp.setList(passengers);
+        passengerQueryRespPageResp.setList(list);
         return passengerQueryRespPageResp;
+    }
+    public void delete(Long id) {
+        passengerMapper.deleteByPrimaryKey(id);
     }
 }
