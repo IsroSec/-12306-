@@ -22,19 +22,44 @@ import java.util.Map;
  * @Version 1.0
  */
 public class ServerGenerator {
-    static String toPath="generator\\src\\main\\java\\com\\jiawa\\train\\generator\\test";
+    static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/service/";
     static String pomPath="generator\\pom.xml";
+    static String module="";
     static {
-        new File(toPath).mkdirs();
+        new File(servicePath).mkdirs();
     }
     public static void main(String[] args) throws Exception {
         String generatorPath = getGeneratorPath();
+
+        module=generatorPath.replace("src/main/resources/generator-config-", "").replace(".xml", "");
+        System.out.println("module: " + module);
+        servicePath=servicePath.replace("[module]", module);
+        // new File(servicePath).mkdirs();
+        System.out.println("servicePath: " + servicePath);
+
         Document document = new SAXReader().read("generator/" + generatorPath);
         Node table = document.selectSingleNode("//table");
         System.out.println(table);
         Node tableName = table.selectSingleNode("@tableName");
         Node domainObjectName = table.selectSingleNode("@domainObjectName");
         System.out.println(tableName.getText() + "/" + domainObjectName.getText());
+
+
+        // 示例：表名 jiawa_test
+        // Domain = JiawaTest
+        String Domain = domainObjectName.getText();
+        // domain = jiawaTest
+        String domain = Domain.substring(0, 1).toLowerCase() + Domain.substring(1);
+        // do_main = jiawa-test 生成getmapping路径的
+        String do_main = tableName.getText().replaceAll("_", "-");
+
+        HashMap<String, Object> param = new HashMap<>();
+        param.put("Domain", Domain);
+        param.put("domain", domain);
+        System.out.println("map = " + param);
+
+        FreemarkerUtil.initConfig("service.ftl");
+        FreemarkerUtil.generator(servicePath + Domain + "Service.java", param);
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");
