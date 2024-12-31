@@ -29,7 +29,7 @@ public class ServerGenerator {
     }
     public static void main(String[] args) throws Exception {
         String generatorPath = getGeneratorPath();
-        Document document = new SAXReader().read("/generator" + generatorPath);
+        Document document = new SAXReader().read("generator/" + generatorPath);
         Node table = document.selectSingleNode("//table");
         System.out.println(table);
         Node tableName = table.selectSingleNode("@tableName");
