@@ -22,7 +22,7 @@ import java.util.Map;
  * @Version 1.0
  */
 public class ServerGenerator {
-    static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/service/";
+    static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/";
     static String pomPath="generator\\pom.xml";
     static String module="";
     static {
@@ -58,13 +58,23 @@ public class ServerGenerator {
         param.put("domain", domain);
         System.out.println("map = " + param);
 
-        FreemarkerUtil.initConfig("service.ftl");
-        FreemarkerUtil.generator(servicePath + Domain + "Service.java", param);
+        gen(Domain, param,"service");
+        gen(Domain, param,"controller");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");
 //        FreemarkerUtil.generator("test.java", param);
 
+    }
+
+    private static void gen(String Domain, HashMap<String, Object> param,String target) throws IOException, TemplateException {
+        String toPath = servicePath  + target+"/";
+        new File(toPath).mkdirs();
+        FreemarkerUtil.initConfig(target+".ftl");
+        String Target = target.substring(0, 1).toUpperCase()+ target.substring(1);
+        String fileName=toPath + Domain + Target+".java";
+        System.out.println("开始生成：" + fileName);
+        FreemarkerUtil.generator(fileName, param);
     }
 
     private static String getGeneratorPath() throws DocumentException {
