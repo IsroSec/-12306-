@@ -23,6 +23,10 @@ import java.util.*;
  * @Version 1.0
  */
 public class ServerGenerator {
+
+    static boolean readOnly = false;
+    static String vuePath = "web/src/views/main/";
+
     static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/";
     static String pomPath="generator\\pom.xml";
     static String module="";
@@ -81,18 +85,28 @@ public class ServerGenerator {
         param.put("fieldList", fieldList);
         param.put("typeSet", typeSet);
         param.put("module", module);
+        param.put("readOnly", readOnly);
         System.out.println("map = " + param);
 
 //        gen(Domain, param,"service","service");
 //        gen(Domain, param,"controller","controller");
 //        gen(Domain, param,"req","saveReq");
-        gen(Domain, param, "req", "queryReq");
-        gen(Domain, param, "resp", "queryResp");
+//        gen(Domain, param, "req", "queryReq");
+//        gen(Domain, param, "resp", "queryResp");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");
 //        FreemarkerUtil.generator("test.java", param);
+        genVue(do_main, param);
 
+    }
+
+    private static void genVue(String do_main, Map<String, Object> param) throws IOException, TemplateException {
+        FreemarkerUtil.initConfig("vue.ftl");
+        new File(vuePath).mkdirs();
+        String fileName = vuePath + do_main + ".vue";
+        System.out.println("开始生成：" + fileName);
+        FreemarkerUtil.generator(fileName, param);
     }
 
     private static Set<String> getJavaTypes(List<Field> fieldList) {
