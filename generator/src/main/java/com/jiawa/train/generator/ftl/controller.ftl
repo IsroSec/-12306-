@@ -38,7 +38,6 @@ public class ${Domain}Controller {
 
     @GetMapping("/query-list")
     public CommonResp<PageResp<${Domain}QueryResp>> queryList(@Valid  ${Domain}QueryReq ${domain}QueryReq) {
-        ${domain}QueryReq.setMemberId(LoginMemberContext.getId());
         return new CommonResp<>(${domain}Service.queryList(${domain}QueryReq));
     }
     @DeleteMapping("/delete/{id}")

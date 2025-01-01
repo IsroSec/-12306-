@@ -83,9 +83,10 @@ public class ServerGenerator {
         param.put("module", module);
         System.out.println("map = " + param);
 
-        gen(Domain, param,"service","service");
-        gen(Domain, param,"controller","controller");
-        gen(Domain, param,"req","saveReq");
+//        gen(Domain, param,"service","service");
+//        gen(Domain, param,"controller","controller");
+//        gen(Domain, param,"req","saveReq");
+
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");

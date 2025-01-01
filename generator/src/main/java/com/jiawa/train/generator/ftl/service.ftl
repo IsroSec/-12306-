@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.${module}.domain.${Domain};
@@ -41,7 +40,6 @@ public class ${Domain}Service {
         ${Domain} ${domain} = BeanUtil.copyProperties(${domain}SaveReq, ${Domain}.class);
         DateTime now = DateTime.now();
         if(ObjectUtil.isNull(${domain}.getId())) {
-            ${domain}.setMemberId(LoginMemberContext.getId());
             ${domain}.setId(SnowUtil.getSnowflakeNextId());
             ${domain}.setCreateTime(now);
             ${domain}.setUpdateTime(now);
@@ -56,9 +54,8 @@ public class ${Domain}Service {
         ${Domain}Example ${domain}Example = new ${Domain}Example();
         ${domain}Example.setOrderByClause("id desc");
         ${Domain}Example.Criteria criteria = ${domain}Example.createCriteria();
-        if(ObjectUtil.isNotEmpty(${domain}QueryReq.getMemberId())){
-            criteria.andMemberIdEqualTo(${domain}QueryReq.getMemberId());
-        }
+
+
         LOG.info("查询页码：{}", ${domain}QueryReq.getPage());
         LOG.info("每页条数：{}", ${domain}QueryReq.getSize());
         PageHelper.startPage(${domain}QueryReq.getPage(), ${domain}QueryReq.getSize());
