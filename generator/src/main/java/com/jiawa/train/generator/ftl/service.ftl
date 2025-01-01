@@ -40,6 +40,7 @@ public class ${Domain}Service {
         ${Domain} ${domain} = BeanUtil.copyProperties(${domain}SaveReq, ${Domain}.class);
         DateTime now = DateTime.now();
         if(ObjectUtil.isNull(${domain}.getId())) {
+//设置一下memberId
             ${domain}.setId(SnowUtil.getSnowflakeNextId());
             ${domain}.setCreateTime(now);
             ${domain}.setUpdateTime(now);
@@ -54,7 +55,7 @@ public class ${Domain}Service {
         ${Domain}Example ${domain}Example = new ${Domain}Example();
         ${domain}Example.setOrderByClause("id desc");
         ${Domain}Example.Criteria criteria = ${domain}Example.createCriteria();
-
+    //这里构造一下查询条件
 
         LOG.info("查询页码：{}", ${domain}QueryReq.getPage());
         LOG.info("每页条数：{}", ${domain}QueryReq.getSize());
