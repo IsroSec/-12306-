@@ -1,13 +1,13 @@
-package com.jiawa.train.member.controller;
+package com.jiawa.train.${module}.controller;
 
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.resp.PageResp;
-import com.jiawa.train.member.domain.${Domain};
-import com.jiawa.train.member.req.${Domain}QueryReq;
-import com.jiawa.train.member.req.${Domain}SaveReq;
-import com.jiawa.train.member.resp.${Domain}QueryResp;
-import com.jiawa.train.member.service.${Domain}Service;
+import com.jiawa.train.${module}.domain.${Domain};
+import com.jiawa.train.${module}.req.${Domain}QueryReq;
+import com.jiawa.train.${module}.req.${Domain}SaveReq;
+import com.jiawa.train.${module}.resp.${Domain}QueryResp;
+import com.jiawa.train.${module}.service.${Domain}Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * ClassName: ${Domain}Controller
- * Package: com.jiawa.train.member.controller
+ * Package: com.jiawa.train.${module}.controller
  * Description:
  *
  * @Author GalSec
