@@ -11,9 +11,7 @@ import org.dom4j.io.SAXReader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ClassName: ServerGenerator
@@ -65,20 +63,29 @@ public class ServerGenerator {
         String Domain = domainObjectName.getText();
         // domain = jiawaTest
         String domain = Domain.substring(0, 1).toLowerCase() + Domain.substring(1);
-        // do_main = jiawa-test 生成getmapping路径的
+        // do_main = jiawa-test url
         String do_main = tableName.getText().replaceAll("_", "-");
 
         // 表中文名
         String tableNameCn = DbUtil.getTableComment(tableName.getText());
         List<Field> fieldList = DbUtil.getColumnByTableName(tableName.getText());
+        //引入类的包
+        Set<String> typeSet = getJavaTypes(fieldList);
+
 
         HashMap<String, Object> param = new HashMap<>();
         param.put("Domain", Domain);
         param.put("domain", domain);
+        param.put("do_main", do_main);
+        param.put("tableNameCn", tableNameCn);
+        param.put("fieldList", fieldList);
+        param.put("typeSet", typeSet);
+        param.put("module", module);
         System.out.println("map = " + param);
 
-        gen(Domain, param,"service");
-        gen(Domain, param,"controller");
+        gen(Domain, param,"service","service");
+        gen(Domain, param,"controller","controller");
+        gen(Domain, param,"req","saveReq");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");
@@ -86,8 +93,17 @@ public class ServerGenerator {
 
     }
 
-    private static void gen(String Domain, HashMap<String, Object> param,String target) throws IOException, TemplateException {
-        String toPath = servicePath  + target+"/";
+    private static Set<String> getJavaTypes(List<Field> fieldList) {
+        HashSet<String> set = new HashSet<>();
+        for (int i = 0; i < fieldList.size(); i++) {
+            Field field = fieldList.get(i);
+            set.add(field.getJavaType());
+        }
+        return set;
+    }
+
+    private static void gen(String Domain, HashMap<String, Object> param,String packageName,String target) throws IOException, TemplateException {
+        String toPath = servicePath  + packageName+"/";
         new File(toPath).mkdirs();
         FreemarkerUtil.initConfig(target+".ftl");
         String Target = target.substring(0, 1).toUpperCase()+ target.substring(1);
