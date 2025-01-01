@@ -42,7 +42,7 @@
            ok-text="确认" cancel-text="取消">
     <a-form :model="${domain}" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
       <#list fieldList as field>
-        <#if field.name!="id" && field.nameHump!="createTime" && field.nameHump!="updateTime">
+        <#if field.name!="id" && field.nameHump!="createTime" && field.nameHump!="updateTime" && field.name!="member_id">
       <a-form-item label="${field.nameCn}">
         <#if field.enums>
         <a-select v-model:value="${domain}.${field.nameHump}">
@@ -93,7 +93,7 @@ export default defineComponent({
     const pagination = ref({
       total: 0,
       current: 1,
-      pageSize: 10,
+      pageSize: 2,
     });
     let loading = ref(false);
     const columns = [
@@ -126,7 +126,7 @@ export default defineComponent({
     };
 
     const onDelete = (record) => {
-      axios.delete("/${module}/admin/${do_main}/delete/" + record.id).then((response) => {
+      axios.delete("/${module}/${do_main}/delete/" + record.id).then((response) => {
         const data = response.data;
         if (data.success) {
           notification.success({description: "删除成功！"});
@@ -141,7 +141,7 @@ export default defineComponent({
     };
 
     const handleOk = () => {
-      axios.post("/${module}/admin/${do_main}/save", ${domain}.value).then((response) => {
+      axios.post("/${module}/${do_main}/save", ${domain}.value).then((response) => {
         let data = response.data;
         if (data.success) {
           notification.success({description: "保存成功！"});
@@ -165,7 +165,7 @@ export default defineComponent({
         };
       }
       loading.value = true;
-      axios.get("/${module}/admin/${do_main}/query-list", {
+      axios.get("/${module}/${do_main}/query-list", {
         params: {
           page: param.page,
           size: param.size
