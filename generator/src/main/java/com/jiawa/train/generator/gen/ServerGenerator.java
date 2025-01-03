@@ -89,7 +89,7 @@ public class ServerGenerator {
         System.out.println("map = " + param);
 
         gen(Domain, param,"service","service");
-        gen(Domain, param,"controller","controller");
+        gen(Domain, param,"controller/admin","AdminController");
         gen(Domain, param,"req","saveReq");
         gen(Domain, param, "req", "queryReq");
         gen(Domain, param, "resp", "queryResp");

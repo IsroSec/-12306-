@@ -1,4 +1,4 @@
-package com.jiawa.train.${module}.controller;
+package com.jiawa.train.${module}.controller.admin;
 
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
@@ -25,8 +25,8 @@ import java.util.List;
  * @Version 1.0
  */
 @RestController
-@RequestMapping("/${domain}")
-public class ${Domain}Controller {
+@RequestMapping("/admin/${domain}")
+public class ${Domain}AdminController {
 
     @Autowired
     private ${Domain}Service ${domain}Service;
