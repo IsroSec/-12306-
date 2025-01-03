@@ -147,7 +147,7 @@ public class DbUtil {
                 || sqlType.toUpperCase().contains("text".toUpperCase())) {
             return "String";
         } else if (sqlType.toUpperCase().contains("datetime".toUpperCase())) {
-            return "Date";
+            return "Date";//这里针对date和time
         } else if (sqlType.toUpperCase().contains("time".toUpperCase())) {
             return "Date";
         } else if (sqlType.toUpperCase().contains("date".toUpperCase())) {

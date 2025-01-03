@@ -19,6 +19,7 @@ public class ${Domain}SaveReq {
     /**
      * ${field.comment}
      */
+       //这里针对date和time
     <#if field.javaType=='Date'>
         <#if field.type=='time'>
     @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT+8")
