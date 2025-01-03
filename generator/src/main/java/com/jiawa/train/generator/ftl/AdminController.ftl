@@ -25,7 +25,7 @@ import java.util.List;
  * @Version 1.0
  */
 @RestController
-@RequestMapping("/admin/${domain}")
+@RequestMapping("/admin/${do_main}")
 public class ${Domain}AdminController {
 
     @Autowired
