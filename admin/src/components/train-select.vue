@@ -2,6 +2,7 @@
   <a-select v-model:value="trainCode" show-search
             :filter-option="filterTrainCodeOption"
             @change="OnChange" placeholder="请选择车次"
+            :style="'width: ' + localWidth"
   >
     <a-select-option v-for="item in trains" :key="item.code" :value="item.code" :label="item.code+item.start+item.end">
       {{item.code}} | {{item.start}} ~ {{item.end}}
@@ -14,11 +15,15 @@ import {defineComponent, onMounted, ref, watch} from "vue";
 import axios from "axios";
 export default defineComponent({
   name: "train-select-view",
-  props:"modelValue",
+  props:["modelValue", "width"],
   emits:["update:modelValue", "change"],
   setup(props, {emit}){
     const trainCode = ref();
     const trains = ref([]);
+    const localWidth = ref(props.width);
+    if (Tool.isEmpty(props.width)) {
+      localWidth.value = "100%";
+    }
     watch(() => props.modelValue, ()=>{
       console.log("props.modelValue", props.modelValue);
       trainCode.value = props.modelValue;
@@ -61,7 +66,8 @@ export default defineComponent({
       trainCode,
       trains,
       filterTrainCodeOption,
-      OnChange
+      OnChange,
+      localWidth
     }
   }
 })
