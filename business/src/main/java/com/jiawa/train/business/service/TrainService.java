@@ -74,4 +74,13 @@ public class TrainService {
     public void delete(Long id) {
         trainMapper.deleteByPrimaryKey(id);
     }
+    public List<TrainQueryResp> queryAll() {
+        TrainExample trainExample = new TrainExample();
+        trainExample.setOrderByClause("id desc");
+        TrainExample.Criteria criteria = trainExample.createCriteria();
+        //这里构造一下查询条件
+        List<Train> trains = trainMapper.selectByExample(trainExample);
+        List<TrainQueryResp> list = BeanUtil.copyToList(trains, TrainQueryResp.class);
+        return list;
+    }
 }
