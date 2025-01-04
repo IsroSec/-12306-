@@ -15,10 +15,11 @@
         </template>
         <a-menu-item key="/welcome"><router-link to="/welcome">欢迎</router-link></a-menu-item>
         <a-menu-item key="/about"><router-link to="/about">关于</router-link></a-menu-item>
-        <a-menu-item key="/about"><router-link to="/station">车站管理</router-link></a-menu-item>
-        <a-menu-item key="/about"><router-link to="/train">车次管理</router-link></a-menu-item>
-        <a-menu-item key="/about"><router-link to="/train-station">火车管理</router-link></a-menu-item>
-        <a-menu-item key="/about"><router-link to="/train_carriage">车厢管理</router-link></a-menu-item>
+        <a-menu-item key="/station"><router-link to="/station">车站管理</router-link></a-menu-item>
+        <a-menu-item key="/train"><router-link to="/train">车次管理</router-link></a-menu-item>
+        <a-menu-item key="/train-station"><router-link to="/train-station">火车管理</router-link></a-menu-item>
+        <a-menu-item key="/train_carriage"><router-link to="/train_carriage">车厢管理</router-link></a-menu-item>
+        <a-menu-item key="/train_seat"><router-link to="/train_seat">座位管理</router-link></a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub2">
         <template #title>
