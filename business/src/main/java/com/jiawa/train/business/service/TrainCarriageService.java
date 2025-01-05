@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.business.enums.SeatColEnum;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.business.domain.TrainCarriage;
@@ -37,10 +38,13 @@ public class TrainCarriageService {
     @Autowired
     private TrainCarriageMapper trainCarriageMapper;
     public void save(TrainCarriageSaveReq trainCarriageSaveReq) {
+        // 自动计算出列数和总座位数
+        List<SeatColEnum> seatColEnums = SeatColEnum.getColsByType(trainCarriageSaveReq.getSeatType());
+        trainCarriageSaveReq.setColCount(seatColEnums.size());
+        trainCarriageSaveReq.setSeatCount(trainCarriageSaveReq.getColCount() * trainCarriageSaveReq.getRowCount());
         TrainCarriage trainCarriage = BeanUtil.copyProperties(trainCarriageSaveReq, TrainCarriage.class);
         DateTime now = DateTime.now();
         if(ObjectUtil.isNull(trainCarriage.getId())) {
-//设置一下memberId
             trainCarriage.setId(SnowUtil.getSnowflakeNextId());
             trainCarriage.setCreateTime(now);
             trainCarriage.setUpdateTime(now);
