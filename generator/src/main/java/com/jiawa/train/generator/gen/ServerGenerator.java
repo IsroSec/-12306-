@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class ServerGenerator {
 
-    static boolean readOnly = false;
+    static boolean readOnly = true;
     static String vuePath = "admin/src/views/main/";
 
     static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/";
@@ -88,11 +88,11 @@ public class ServerGenerator {
         param.put("readOnly", readOnly);
         System.out.println("map = " + param);
 
-        gen(Domain, param,"service","service");
-        gen(Domain, param,"controller/admin","AdminController");
-        gen(Domain, param,"req","saveReq");
-        gen(Domain, param, "req", "queryReq");
-        gen(Domain, param, "resp", "queryResp");
+//        gen(Domain, param,"service","service");
+//        gen(Domain, param,"controller/admin","AdminController");
+//        gen(Domain, param,"req","saveReq");
+//        gen(Domain, param, "req", "queryReq");
+//        gen(Domain, param, "resp", "queryResp");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
 //        param.put("domain","Test");
