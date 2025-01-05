@@ -56,7 +56,9 @@ public class TrainCarriageService {
         trainCarriageExample.setOrderByClause("id desc");
         TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjectUtil.isNotEmpty(trainCarriageQueryReq.getTrainCode())){
+            criteria.andTrainCodeEqualTo(trainCarriageQueryReq.getTrainCode());
+        }
         LOG.info("查询页码：{}", trainCarriageQueryReq.getPage());
         LOG.info("每页条数：{}", trainCarriageQueryReq.getSize());
         PageHelper.startPage(trainCarriageQueryReq.getPage(), trainCarriageQueryReq.getSize());

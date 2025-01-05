@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model:value="name" show-search
+  <a-select v-model:value="name" show-search allowClear
             :filter-option="filterTrainCodeOption"
             @change="OnChange" placeholder="请选择车次"
             :style="'width: ' + localWidth"

@@ -56,7 +56,9 @@ public class TrainSeatService {
         trainSeatExample.setOrderByClause("id desc");
         TrainSeatExample.Criteria criteria = trainSeatExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjectUtil.isNotEmpty(trainSeatQueryReq.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(trainSeatQueryReq.getTrainCode());
+        }
         LOG.info("查询页码：{}", trainSeatQueryReq.getPage());
         LOG.info("每页条数：{}", trainSeatQueryReq.getSize());
         PageHelper.startPage(trainSeatQueryReq.getPage(), trainSeatQueryReq.getSize());
