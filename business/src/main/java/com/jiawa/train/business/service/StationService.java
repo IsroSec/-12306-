@@ -1,10 +1,13 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.business.domain.Station;
@@ -37,6 +40,12 @@ public class StationService {
     @Autowired
     private StationMapper stationMapper;
     public void save(StationSaveReq stationSaveReq) {
+// 保存之前，先校验唯一键是否存在
+        Station stationDB = selectByUnique(stationSaveReq.getName());
+        if (ObjectUtil.isNotEmpty(stationDB)) {
+            throw new BusinessException(BusinessExceptionEnum.BUSINESS_STATION_NAME_UNIQUE_ERROR);
+        }
+
         Station station = BeanUtil.copyProperties(stationSaveReq, Station.class);
         DateTime now = DateTime.now();
         if(ObjectUtil.isNull(station.getId())) {
@@ -51,6 +60,16 @@ public class StationService {
         }
     }
 
+    private Station selectByUnique(String name) {
+        StationExample stationExample = new StationExample();
+        stationExample.createCriteria().andNameEqualTo(name);
+        List<Station> list = stationMapper.selectByExample(stationExample);
+        if (CollUtil.isNotEmpty(list)) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
     public PageResp<StationQueryResp> queryList(StationQueryReq stationQueryReq) {
         StationExample stationExample = new StationExample();
         stationExample.setOrderByClause("id desc");
