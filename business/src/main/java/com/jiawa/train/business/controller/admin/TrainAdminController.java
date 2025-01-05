@@ -1,5 +1,6 @@
 package com.jiawa.train.business.controller.admin;
 
+import com.jiawa.train.business.service.TrainSeatService;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.resp.PageResp;
@@ -30,6 +31,9 @@ public class TrainAdminController {
 
     @Autowired
     private TrainService trainService;
+
+    @Autowired
+    private TrainSeatService trainSeatService;
     @PostMapping("/save")
     public CommonResp<Object> save(@Valid @RequestBody TrainSaveReq trainSaveReq) {
         trainService.save(trainSaveReq);
@@ -51,5 +55,11 @@ public class TrainAdminController {
     public CommonResp<List<TrainQueryResp>> queryList() {
         //这里拿到localthread的id
         return new CommonResp<>(trainService.queryAll());
+    }
+
+    @GetMapping("/gen-seat/{trainCode}")
+    public CommonResp<Object> genSeat(@PathVariable String trainCode) {
+        trainSeatService.genTrainSeat(trainCode);
+        return new CommonResp<>();
     }
 }
