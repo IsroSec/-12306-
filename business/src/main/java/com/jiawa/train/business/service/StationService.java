@@ -74,4 +74,13 @@ public class StationService {
     public void delete(Long id) {
         stationMapper.deleteByPrimaryKey(id);
     }
+    public List<StationQueryResp> queryAll() {
+        StationExample stationExample = new StationExample();
+        stationExample.setOrderByClause("name_pinyin asc");
+        StationExample.Criteria criteria = stationExample.createCriteria();
+        //这里构造一下查询条件
+        List<Station> stations = stationMapper.selectByExample(stationExample);
+        List<StationQueryResp> list = BeanUtil.copyToList(stations, StationQueryResp.class);
+        return list;
+    }
 }

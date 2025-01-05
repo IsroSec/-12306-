@@ -46,4 +46,10 @@ public class StationAdminController {
         stationService.delete(id);
         return new CommonResp<>();
     }
+
+    @GetMapping("/query-all")
+    public CommonResp<List<StationQueryResp>> queryList() {
+        //这里拿到localthread的id
+        return new CommonResp<>(stationService.queryAll());
+    }
 }
