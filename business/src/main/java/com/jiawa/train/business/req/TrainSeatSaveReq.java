@@ -39,14 +39,14 @@ public class TrainSeatSaveReq {
      * 列号|枚举[SeatColEnum]
      */
        //这里针对date和time
-    @NotBlank(message = "【列号】不能为空")
+//    @NotBlank(message = "【列号】不能为空")
     private String col;
 
     /**
      * 座位类型|枚举[SeatTypeEnum]
      */
        //这里针对date和time
-    @NotBlank(message = "【座位类型】不能为空")
+//    @NotBlank(message = "【座位类型】不能为空")
     private String seatType;
 
     /**
