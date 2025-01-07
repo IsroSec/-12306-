@@ -56,7 +56,12 @@ public class DailyTrainService {
         dailyTrainExample.setOrderByClause("id desc");
         DailyTrainExample.Criteria criteria = dailyTrainExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjectUtil.isNotNull(dailyTrainQueryReq.getCode())){
+            criteria.andCodeEqualTo(dailyTrainQueryReq.getCode());
+        }
+        if (ObjectUtil.isNotNull(dailyTrainQueryReq.getDate())){
+            criteria.andDateEqualTo(dailyTrainQueryReq.getDate());
+        }
         LOG.info("查询页码：{}", dailyTrainQueryReq.getPage());
         LOG.info("每页条数：{}", dailyTrainQueryReq.getSize());
         PageHelper.startPage(dailyTrainQueryReq.getPage(), dailyTrainQueryReq.getSize());
