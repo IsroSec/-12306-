@@ -16,6 +16,7 @@
           </span>
         </template>
         <a-menu-item key="/business/daily_train"><router-link to="/business/daily-train">每日车次</router-link></a-menu-item>
+        <a-menu-item key="/business/daily_train_station"><router-link to="/business/daily-train-station">每日车站</router-link></a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="base">
         <template #title>
