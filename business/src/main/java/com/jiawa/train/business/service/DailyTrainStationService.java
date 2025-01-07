@@ -56,7 +56,12 @@ public class DailyTrainStationService {
         dailyTrainStationExample.setOrderByClause("id desc");
         DailyTrainStationExample.Criteria criteria = dailyTrainStationExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjectUtil.isNotNull(dailyTrainStationQueryReq.getTrainCode())){
+            criteria.andTrainCodeEqualTo(dailyTrainStationQueryReq.getTrainCode());
+        }
+        if (ObjectUtil.isNotNull(dailyTrainStationQueryReq.getDate())){
+            criteria.andDateEqualTo(dailyTrainStationQueryReq.getDate());
+        }
         LOG.info("查询页码：{}", dailyTrainStationQueryReq.getPage());
         LOG.info("每页条数：{}", dailyTrainStationQueryReq.getSize());
         PageHelper.startPage(dailyTrainStationQueryReq.getPage(), dailyTrainStationQueryReq.getSize());

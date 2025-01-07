@@ -5,7 +5,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-public class DailyTrainStationQueryReq extends PageReq {
+public class DailyTrainCarriageQueryReq extends PageReq {
+
+    private String trainCode;
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("DailyTrainCarriageQueryReq{");
+        sb.append("trainCode='").append(trainCode).append('\'');
+        sb.append(", date=").append(date);
+        sb.append('}');
+        return sb.toString();
+    }
 
     public String getTrainCode() {
         return trainCode;
@@ -13,17 +24,6 @@ public class DailyTrainStationQueryReq extends PageReq {
 
     public void setTrainCode(String trainCode) {
         this.trainCode = trainCode;
-    }
-
-    private String trainCode;
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("DailyTrainStationQueryReq{");
-        sb.append("trainCode='").append(trainCode).append('\'');
-        sb.append(", date=").append(date);
-        sb.append('}');
-        return sb.toString();
     }
 
     public Date getDate() {
