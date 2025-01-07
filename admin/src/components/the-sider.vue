@@ -2,12 +2,21 @@
   <a-layout-sider width="200" style="background: #fff">
     <a-menu
         v-model:selectedKeys="selectedKeys2"
-        :openKeys="['batch', 'base']"
+        :openKeys="['batch', 'base','business']"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
     >
       <a-menu-item key="/welcome"><router-link to="/welcome">欢迎</router-link></a-menu-item>
       <a-menu-item key="/about"><router-link to="/about">关于</router-link></a-menu-item>
+      <a-sub-menu key="business">
+        <template #title>
+          <span>
+            <user-outlined />
+            每日管理
+          </span>
+        </template>
+        <a-menu-item key="/business/daily_train"><router-link to="/business/daily-train">每日车次</router-link></a-menu-item>
+      </a-sub-menu>
       <a-sub-menu key="base">
         <template #title>
               <span>
