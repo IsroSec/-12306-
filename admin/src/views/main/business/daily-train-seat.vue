@@ -105,10 +105,6 @@ export default defineComponent({
       title: '售卖情况',
       dataIndex: 'sell',
       key: 'sell',
-    },
-    {
-      title: '操作',
-      dataIndex: 'operation'
     }
     ];
     const params=ref({
