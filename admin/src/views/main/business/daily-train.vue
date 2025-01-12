@@ -3,8 +3,9 @@
     <a-space>
       <a-date-picker v-model:value="params.date" valueFormat="YYYY-MM-DD" placeholder="请选择日期" />
       <train-select-view v-model="params.code" width="200px"></train-select-view>
-      <a-button type="primary" @click="handleQuery()">查询</a-button>
+      <a-button type="primary" @click="handleQuery()">刷新</a-button>
       <a-button type="primary" @click="onAdd">新增</a-button>
+      <a-button type="danger" @click="onClickGenDaily">手动生成车次信息</a-button>
     </a-space>
   </p>
   <a-table :dataSource="dailyTrains"
@@ -56,7 +57,6 @@
         <a-input v-model:value="dailyTrain.startPinyin" />
       </a-form-item>
       <a-form-item label="出发时间">
-            <!--  这里针对date和time-->
         <a-time-picker v-model:value="dailyTrain.startTime" valueFormat="HH:mm:ss" placeholder="请选择时间" />
       </a-form-item>
       <a-form-item label="终点站">
@@ -66,8 +66,15 @@
         <a-input v-model:value="dailyTrain.endPinyin" />
       </a-form-item>
       <a-form-item label="到站时间">
-            <!--  这里针对date和time-->
         <a-time-picker v-model:value="dailyTrain.endTime" valueFormat="HH:mm:ss" placeholder="请选择时间" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
+  <a-modal v-model:visible="genDailyVisible" title="生成车次" @ok="handleGenDailyOk"
+           :confirm-loading="genDailyLoading" ok-text="确认" cancel-text="取消">
+    <a-form :model="genDaily" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
+      <a-form-item label="日期">
+        <a-date-picker v-model:value="genDaily.date" placeholder="请选择日期"/>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -77,7 +84,8 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import {notification} from "ant-design-vue";
 import axios from "axios";
-import TrainSelectView from "@/components/train-select.vue";
+import TrainSelectView from "@/components/train-select";
+import dayjs from 'dayjs';
 
 export default defineComponent({
   name: "daily-train-view",
@@ -99,10 +107,6 @@ export default defineComponent({
       createTime: undefined,
       updateTime: undefined,
     });
-    const params=ref({
-      code:null,
-      date:null
-    })
     const dailyTrains = ref([]);
     // 分页的三个属性名是固定的
     const pagination = ref({
@@ -111,56 +115,64 @@ export default defineComponent({
       pageSize: 10,
     });
     let loading = ref(false);
+    let params = ref({
+      code: null
+    });
+    const genDaily = ref({
+      date: null
+    });
+    const genDailyVisible = ref(false);
+    const genDailyLoading = ref(false);
     const columns = [
-    {
-      title: '日期',
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: '车次编号',
-      dataIndex: 'code',
-      key: 'code',
-    },
-    {
-      title: '车次类型',
-      dataIndex: 'type',
-      key: 'type',
-    },
-    {
-      title: '始发站',
-      dataIndex: 'start',
-      key: 'start',
-    },
-    {
-      title: '始发站拼音',
-      dataIndex: 'startPinyin',
-      key: 'startPinyin',
-    },
-    {
-      title: '出发时间',
-      dataIndex: 'startTime',
-      key: 'startTime',
-    },
-    {
-      title: '终点站',
-      dataIndex: 'end',
-      key: 'end',
-    },
-    {
-      title: '终点站拼音',
-      dataIndex: 'endPinyin',
-      key: 'endPinyin',
-    },
-    {
-      title: '到站时间',
-      dataIndex: 'endTime',
-      key: 'endTime',
-    },
-    {
-      title: '操作',
-      dataIndex: 'operation'
-    }
+      {
+        title: '日期',
+        dataIndex: 'date',
+        key: 'date',
+      },
+      {
+        title: '车次编号',
+        dataIndex: 'code',
+        key: 'code',
+      },
+      {
+        title: '车次类型',
+        dataIndex: 'type',
+        key: 'type',
+      },
+      {
+        title: '始发站',
+        dataIndex: 'start',
+        key: 'start',
+      },
+      {
+        title: '始发站拼音',
+        dataIndex: 'startPinyin',
+        key: 'startPinyin',
+      },
+      {
+        title: '出发时间',
+        dataIndex: 'startTime',
+        key: 'startTime',
+      },
+      {
+        title: '终点站',
+        dataIndex: 'end',
+        key: 'end',
+      },
+      {
+        title: '终点站拼音',
+        dataIndex: 'endPinyin',
+        key: 'endPinyin',
+      },
+      {
+        title: '到站时间',
+        dataIndex: 'endTime',
+        key: 'endTime',
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation'
+      }
     ];
 
     const onAdd = () => {
@@ -233,14 +245,14 @@ export default defineComponent({
       });
     };
 
-    const handleTableChange = (page) => {
-      // console.log("看看自带的分页参数都有啥：" + JSON.stringify(page));
-      pagination.value.pageSize = page.pageSize;
+    const handleTableChange = (pagination) => {
+      // console.log("看看自带的分页参数都有啥：" + pagination);
       handleQuery({
-        page: page.current,
-        size: page.pageSize
+        page: pagination.current,
+        size: pagination.pageSize
       });
     };
+
     const onChangeCode = (train) => {
       console.log("车次下拉组件选择：", train);
       let t = Tool.copy(train);
@@ -248,6 +260,30 @@ export default defineComponent({
       // 用assign可以合并
       dailyTrain.value = Object.assign(dailyTrain.value, t);
     };
+
+    const onClickGenDaily = () => {
+      genDailyVisible.value = true;
+    };
+
+    const handleGenDailyOk = () => {
+      let date = dayjs(genDaily.value.date).format("YYYY-MM-DD");
+      genDailyLoading.value = true;
+      axios.get("/business/admin/daily-train/gen-daily/" + date).then((response) => {
+        genDailyLoading.value = false;
+        let data = response.data;
+        if (data.success) {
+          notification.success({description: "生成成功！"});
+          genDailyVisible.value = false;
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        } else {
+          notification.error({description: data.message});
+        }
+      });
+    };
+
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -270,7 +306,12 @@ export default defineComponent({
       onEdit,
       onDelete,
       onChangeCode,
-      params
+      params,
+      genDaily,
+      genDailyVisible,
+      handleGenDailyOk,
+      onClickGenDaily,
+      genDailyLoading
     };
   },
 });
