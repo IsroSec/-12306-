@@ -77,7 +77,7 @@ public class TrainCarriageService {
     }
     public PageResp<TrainCarriageQueryResp> queryList(TrainCarriageQueryReq trainCarriageQueryReq) {
         TrainCarriageExample trainCarriageExample = new TrainCarriageExample();
-        trainCarriageExample.setOrderByClause("id desc");
+        trainCarriageExample.setOrderByClause("train_code asc, `index` asc");
         TrainCarriageExample.Criteria criteria = trainCarriageExample.createCriteria();
     //这里构造一下查询条件
         if (ObjectUtil.isNotEmpty(trainCarriageQueryReq.getTrainCode())){

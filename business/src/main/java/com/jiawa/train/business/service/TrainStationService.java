@@ -89,7 +89,7 @@ public class TrainStationService {
     }
     public PageResp<TrainStationQueryResp> queryList(TrainStationQueryReq trainStationQueryReq) {
         TrainStationExample trainStationExample = new TrainStationExample();
-        trainStationExample.setOrderByClause("id desc");
+        trainStationExample.setOrderByClause("train_code asc, `index` asc");
         TrainStationExample.Criteria criteria = trainStationExample.createCriteria();
     //这里构造一下查询条件
 

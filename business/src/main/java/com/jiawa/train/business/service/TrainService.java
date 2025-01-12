@@ -72,7 +72,7 @@ public class TrainService {
     }
     public PageResp<TrainQueryResp> queryList(TrainQueryReq trainQueryReq) {
         TrainExample trainExample = new TrainExample();
-        trainExample.setOrderByClause("id desc");
+        trainExample.setOrderByClause("code asc");
         TrainExample.Criteria criteria = trainExample.createCriteria();
     //这里构造一下查询条件
 

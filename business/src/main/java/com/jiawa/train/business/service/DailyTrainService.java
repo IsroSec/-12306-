@@ -50,6 +50,9 @@ public class DailyTrainService {
 
     @Autowired
     private  DailyTrainCarriageService dailyTrainCarriageService;
+
+    @Autowired
+    private DailyTrainSeatService dailyTrainSeatService;
     public void save(DailyTrainSaveReq dailyTrainSaveReq) {
         DailyTrain dailyTrain = BeanUtil.copyProperties(dailyTrainSaveReq, DailyTrain.class);
         DateTime now = DateTime.now();
@@ -67,7 +70,7 @@ public class DailyTrainService {
 
     public PageResp<DailyTrainQueryResp> queryList(DailyTrainQueryReq dailyTrainQueryReq) {
         DailyTrainExample dailyTrainExample = new DailyTrainExample();
-        dailyTrainExample.setOrderByClause("id desc");
+        dailyTrainExample.setOrderByClause("date desc, code asc");
         DailyTrainExample.Criteria criteria = dailyTrainExample.createCriteria();
     //这里构造一下查询条件
         if (ObjectUtil.isNotNull(dailyTrainQueryReq.getCode())){
@@ -134,5 +137,7 @@ public class DailyTrainService {
         dailyTrainStationService.genDaily(date, train.getCode());
         // 生成该车次的车厢数据
         dailyTrainCarriageService.genDaily(date, train.getCode());
+        // 生成该车次的座位数据
+        dailyTrainSeatService.genDaily(date, train.getCode());
     }
 }

@@ -60,7 +60,7 @@ public class DailyTrainStationService {
 
     public PageResp<DailyTrainStationQueryResp> queryList(DailyTrainStationQueryReq dailyTrainStationQueryReq) {
         DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
-        dailyTrainStationExample.setOrderByClause("id desc");
+        dailyTrainStationExample.setOrderByClause("date desc, train_code asc, `index` asc");
         DailyTrainStationExample.Criteria criteria = dailyTrainStationExample.createCriteria();
     //这里构造一下查询条件
         if (ObjectUtil.isNotNull(dailyTrainStationQueryReq.getTrainCode())){
