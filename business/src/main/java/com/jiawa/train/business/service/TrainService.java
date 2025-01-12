@@ -94,12 +94,15 @@ public class TrainService {
         trainMapper.deleteByPrimaryKey(id);
     }
     public List<TrainQueryResp> queryAll() {
-        TrainExample trainExample = new TrainExample();
-        trainExample.setOrderByClause("id asc");
-        TrainExample.Criteria criteria = trainExample.createCriteria();
-        //这里构造一下查询条件
-        List<Train> trains = trainMapper.selectByExample(trainExample);
+        List<Train> trains = selectAll();
         List<TrainQueryResp> list = BeanUtil.copyToList(trains, TrainQueryResp.class);
         return list;
+    }
+
+    public List<Train> selectAll() {
+        TrainExample trainExample = new TrainExample();
+        trainExample.setOrderByClause("code asc");
+        List<Train> trains = trainMapper.selectByExample(trainExample);
+        return trains;
     }
 }
