@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.EnumUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -70,7 +71,18 @@ public class DailyTrainTicketService {
         dailyTrainTicketExample.setOrderByClause("id desc");
         DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjUtil.isNotNull(dailyTrainTicketQueryReq.getDate())) {
+            criteria.andDateEqualTo(dailyTrainTicketQueryReq.getDate());
+        }
+        if (ObjUtil.isNotEmpty(dailyTrainTicketQueryReq.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(dailyTrainTicketQueryReq.getTrainCode());
+        }
+        if (ObjUtil.isNotEmpty(dailyTrainTicketQueryReq.getStart())) {
+            criteria.andStartEqualTo(dailyTrainTicketQueryReq.getStart());
+        }
+        if (ObjUtil.isNotEmpty(dailyTrainTicketQueryReq.getEnd())) {
+            criteria.andEndEqualTo(dailyTrainTicketQueryReq.getEnd());
+        }
         LOG.info("查询页码：{}", dailyTrainTicketQueryReq.getPage());
         LOG.info("每页条数：{}", dailyTrainTicketQueryReq.getSize());
         PageHelper.startPage(dailyTrainTicketQueryReq.getPage(), dailyTrainTicketQueryReq.getSize());

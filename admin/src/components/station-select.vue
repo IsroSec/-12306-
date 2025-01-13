@@ -1,7 +1,7 @@
 <template>
   <a-select v-model:value="name" show-search allowClear
             :filter-option="filterTrainCodeOption"
-            @change="OnChange" placeholder="请选择车次"
+            @change="OnChange" placeholder="请选择车站"
             :style="'width: ' + localWidth"
   >
     <a-select-option v-for="item in stations" :key="item.name" :value="item.name" :label="item.name + item.namePinyin + item.namePy">
