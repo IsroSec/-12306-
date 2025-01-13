@@ -17,6 +17,7 @@
     >
       <a-menu-item key="/welcome"><router-link to="/welcome">欢迎</router-link></a-menu-item>
       <a-menu-item key="/passenger"><router-link to="/passenger">乘车人</router-link></a-menu-item>
+      <a-menu-item key="/ticket"><router-link to="/ticket">选票</router-link></a-menu-item>
     </a-menu>
   </a-layout-header>
 </template>
