@@ -18,10 +18,11 @@
   <a-divider></a-divider>
   <b>勾选要购票的乘客：</b>&nbsp;
   <a-checkbox-group v-model:value="passengerChecks" :options="passengerOptions" />
+  {{tickets}}
 </template>
 
 <script>
-import {defineComponent, onMounted, ref} from "vue";
+import {defineComponent, onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {notification} from "ant-design-vue";
 
@@ -44,6 +45,20 @@ export default defineComponent({
         })
       }
     }
+    const tickets = ref([]);
+    // 勾选或去掉某个乘客时，在购票列表中加上或去掉一张表
+    watch(() => passengerChecks.value, (newVal, oldVal)=>{
+      console.log("勾选乘客发生变化", newVal, oldVal)
+      // 每次有变化时，把购票列表清空，重新构造列表
+      tickets.value = [];
+      passengerChecks.value.forEach((item) => tickets.value.push({
+        passengerId: item.id,
+        passengerType: item.type,
+        seatTypeCode: seatTypes[0].code,
+        passengerName: item.name,
+        passengerIdCard: item.idCard
+      }))
+    }, {immediate: true});
     const passengers=ref([]);
     const handleQueryPassengers=()=>{
       axios.get("/member/passenger/query-mine").then(response=>{
@@ -68,6 +83,7 @@ export default defineComponent({
       passengers,
       passengerOptions,
       passengerChecks,
+      tickets
     }
   }
 });
