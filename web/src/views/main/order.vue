@@ -19,6 +19,32 @@
   <b>勾选要购票的乘客：</b>&nbsp;
   <a-checkbox-group v-model:value="passengerChecks" :options="passengerOptions" />
   {{tickets}}
+  <div class="order-tickets">
+    <a-row class="order-tickets-header" v-if="tickets.length > 0">
+      <a-col :span="2">乘客</a-col>
+      <a-col :span="6">身份证</a-col>
+      <a-col :span="4">票种</a-col>
+      <a-col :span="4">座位类型</a-col>
+    </a-row>
+    <a-row class="order-tickets-row" v-for="ticket in tickets" :key="ticket.passengerId">
+      <a-col :span="2">{{ticket.passengerName}}</a-col>
+      <a-col :span="6">{{ticket.passengerIdCard}}</a-col>
+      <a-col :span="4">
+        <a-select v-model:value="ticket.passengerType" style="width: 100%">
+          <a-select-option v-for="item in PASSENGER_TYPE_ARRAY" :key="item.code" :value="item.code">
+            {{item.desc}}
+          </a-select-option>
+        </a-select>
+      </a-col>
+      <a-col :span="4">
+        <a-select v-model:value="ticket.seatTypeCode" style="width: 100%">
+          <a-select-option v-for="item in seatTypes" :key="item.code" :value="item.code">
+            {{item.desc}}
+          </a-select-option>
+        </a-select>
+      </a-col>
+    </a-row>
+  </div>
 </template>
 
 <script>
@@ -33,6 +59,7 @@ export default defineComponent({
     const passengerOptions=ref([]);
     const passengerChecks=ref([]);
     const seatTypes=[];
+    const PASSENGER_TYPE_ARRAY=window.PASSENGER_TYPE_ARRAY
     for (let KEY in SEAT_TYPE){
       let key=KEY.toLowerCase();
       if (dailyTrainTicket[key]>=0){
@@ -83,7 +110,8 @@ export default defineComponent({
       passengers,
       passengerOptions,
       passengerChecks,
-      tickets
+      tickets,
+      PASSENGER_TYPE_ARRAY
     }
   }
 });
