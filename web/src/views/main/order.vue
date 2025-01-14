@@ -45,6 +45,41 @@
       </a-col>
     </a-row>
   </div>
+  <div v-if="tickets.length > 0">
+    <a-button type="primary" size="large" @click="finishCheckPassenger">提交订单</a-button>
+  </div>
+
+  <a-modal v-model:visible="visible" title="请核对以下信息"
+           style="top: 50px; width: 800px"
+           ok-text="确认" cancel-text="取消"
+           @ok="handleOk">
+    <div class="order-tickets">
+      <a-row class="order-tickets-header" v-if="tickets.length > 0">
+        <a-col :span="3">乘客</a-col>
+        <a-col :span="15">身份证</a-col>
+        <a-col :span="3">票种</a-col>
+        <a-col :span="3">座位类型</a-col>
+      </a-row>
+      <a-row class="order-tickets-row" v-for="ticket in tickets" :key="ticket.passengerId">
+        <a-col :span="3">{{ticket.passengerName}}</a-col>
+        <a-col :span="15">{{ticket.passengerIdCard}}</a-col>
+        <a-col :span="3">
+          <span v-for="item in PASSENGER_TYPE_ARRAY" :key="item.code">
+            <span v-if="item.code === ticket.passengerType">
+              {{item.desc}}
+            </span>
+          </span>
+        </a-col>
+        <a-col :span="3">
+          <span v-for="item in seatTypes" :key="item.code">
+            <span v-if="item.code === ticket.seatTypeCode">
+              {{item.desc}}
+            </span>
+          </span>
+        </a-col>
+      </a-row>
+    </div>
+  </a-modal>
 </template>
 
 <script>
@@ -59,7 +94,8 @@ export default defineComponent({
     const passengerOptions=ref([]);
     const passengerChecks=ref([]);
     const seatTypes=[];
-    const PASSENGER_TYPE_ARRAY=window.PASSENGER_TYPE_ARRAY
+    const PASSENGER_TYPE_ARRAY=window.PASSENGER_TYPE_ARRAY;
+    const visible=ref(false);
     for (let KEY in SEAT_TYPE){
       let key=KEY.toLowerCase();
       if (dailyTrainTicket[key]>=0){
@@ -86,6 +122,14 @@ export default defineComponent({
         passengerIdCard: item.idCard
       }))
     }, {immediate: true});
+    const finishCheckPassenger=()=>{
+      console.log("购票列表", tickets.value)
+      //限购
+      if (tickets.value.length >5){
+        notification.error({description: "最多购买5张票"});
+      }
+      visible.value=true;
+    }
     const passengers=ref([]);
     const handleQueryPassengers=()=>{
       axios.get("/member/passenger/query-mine").then(response=>{
@@ -111,7 +155,9 @@ export default defineComponent({
       passengerOptions,
       passengerChecks,
       tickets,
-      PASSENGER_TYPE_ARRAY
+      PASSENGER_TYPE_ARRAY,
+      finishCheckPassenger,
+      visible
     }
   }
 });
