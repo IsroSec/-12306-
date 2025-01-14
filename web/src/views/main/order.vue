@@ -153,6 +153,7 @@ export default defineComponent({
     // }
     const chooseSeatObj = ref({});
     watch(() => SEAT_COL_ARRAY.value, () => {
+      chooseSeatObj.value = {};
       for (let i = 1; i <= 2; i++) {
         SEAT_COL_ARRAY.value.forEach((item) => {
           chooseSeatObj.value[item.code + i] = false;
