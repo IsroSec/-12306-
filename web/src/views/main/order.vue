@@ -15,10 +15,14 @@
       </span>
     </div>
   </div>
+  <a-divider></a-divider>
+  {{ passengers }}
 </template>
 
 <script>
-import {defineComponent} from "vue";
+import {defineComponent, onMounted, ref} from "vue";
+import axios from "axios";
+import {notification} from "ant-design-vue";
 
 export default defineComponent({
   name: 'order-view',
@@ -38,9 +42,24 @@ export default defineComponent({
         })
       }
     }
+    const passengers=ref([]);
+    const handleQueryPassengers=()=>{
+      axios.get("/member/passenger/query-mine").then(response=>{
+        let data=response.data;
+        if (data.success){
+          passengers.value=data.content;
+        }else {
+          notification.error({description: data.message});
+        }
+      })
+    };
+    onMounted(()=>{
+      handleQueryPassengers();
+    })
     return {
       dailyTrainTicket,
-      seatTypes
+      seatTypes,
+      passengers
     }
   }
 });

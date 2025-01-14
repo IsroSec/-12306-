@@ -46,4 +46,9 @@ public class PassengerController {
         passengerService.delete(id);
         return new CommonResp<>();
     }
+    @GetMapping("/query-mine")
+    public CommonResp<List<PassengerQueryResp>> querymine() {
+        List<PassengerQueryResp> list = passengerService.queryMine();
+        return new CommonResp<>(list);
+    }
 }
