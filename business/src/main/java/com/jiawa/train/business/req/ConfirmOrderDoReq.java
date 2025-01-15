@@ -1,18 +1,14 @@
 package com.jiawa.train.business.req;
 
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class ConfirmOrderSaveReq {
-
-    /**
-     * id
-     */
-       //这里针对date和time
-    private Long id;
+public class ConfirmOrderDoReq {
 
     /**
      * 会员id
@@ -62,36 +58,10 @@ public class ConfirmOrderSaveReq {
      */
        //这里针对date和time
     @NotBlank(message = "【车票】不能为空")
-    private String tickets;
+    private List<ConfirmOrderTicketReq> tickets;
 
-    /**
-     * 订单状态|枚举[ConfirmOrderStatusEnum]
-     */
-       //这里针对date和time
-    @NotBlank(message = "【订单状态】不能为空")
-    private String status;
 
-    /**
-     * 新增时间
-     */
-       //这里针对date和time
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date createTime;
 
-    /**
-     * 修改时间
-     */
-       //这里针对date和time
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getMemberId() {
         return memberId;
@@ -141,56 +111,26 @@ public class ConfirmOrderSaveReq {
         this.dailyTrainTicketId = dailyTrainTicketId;
     }
 
-    public String getTickets() {
-        return tickets;
-    }
-
-    public void setTickets(String tickets) {
-        this.tickets = tickets;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", memberId=").append(memberId);
+        final StringBuffer sb = new StringBuffer("ConfirmOrderDoReq{");
+        sb.append("memberId=").append(memberId);
         sb.append(", date=").append(date);
-        sb.append(", trainCode=").append(trainCode);
-        sb.append(", start=").append(start);
-        sb.append(", end=").append(end);
+        sb.append(", trainCode='").append(trainCode).append('\'');
+        sb.append(", start='").append(start).append('\'');
+        sb.append(", end='").append(end).append('\'');
         sb.append(", dailyTrainTicketId=").append(dailyTrainTicketId);
         sb.append(", tickets=").append(tickets);
-        sb.append(", status=").append(status);
-        sb.append(", createTime=").append(createTime);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append("]");
+        sb.append('}');
         return sb.toString();
+    }
+
+    public List<ConfirmOrderTicketReq> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<ConfirmOrderTicketReq> tickets) {
+        this.tickets = tickets;
     }
 }
