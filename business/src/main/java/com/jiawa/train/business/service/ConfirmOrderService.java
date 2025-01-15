@@ -3,15 +3,18 @@ package com.jiawa.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.business.enums.ConfirmOrderStatusEnum;
+import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.business.domain.ConfirmOrder;
 import com.jiawa.train.business.domain.ConfirmOrderExample;
 import com.jiawa.train.business.mapper.ConfirmOrderMapper;
 import com.jiawa.train.business.req.ConfirmOrderQueryReq;
-import com.jiawa.train.business.req.ConfirmOrderSaveReq;
+import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.business.resp.ConfirmOrderQueryResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +39,8 @@ public class ConfirmOrderService {
 
     @Autowired
     private ConfirmOrderMapper confirmOrderMapper;
-    public void save(ConfirmOrderSaveReq confirmOrderSaveReq) {
-        ConfirmOrder confirmOrder = BeanUtil.copyProperties(confirmOrderSaveReq, ConfirmOrder.class);
+    public void save(ConfirmOrderDoReq confirmOrderDoReq) {
+        ConfirmOrder confirmOrder = BeanUtil.copyProperties(confirmOrderDoReq, ConfirmOrder.class);
         DateTime now = DateTime.now();
         if(ObjectUtil.isNull(confirmOrder.getId())) {
 //设置一下memberId
@@ -73,5 +76,41 @@ public class ConfirmOrderService {
     }
     public void delete(Long id) {
         confirmOrderMapper.deleteByPrimaryKey(id);
+    }
+
+    public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq) {
+        // 省略业务数据校验，如：车次是否存在，余票是否存在，车次是否在有效期内，tickets条数>0，同乘客同车次是否已买过
+
+        // 保存确认订单表，状态初始
+        DateTime now = DateTime.now();
+        ConfirmOrder confirmOrder = new ConfirmOrder();
+        confirmOrder.setId(SnowUtil.getSnowflakeNextId());
+        confirmOrder.setCreateTime(now);
+        confirmOrder.setUpdateTime(now);
+        confirmOrder.setMemberId(LoginMemberContext.getId());
+        confirmOrder.setDate(confirmOrderDoReq.getDate());
+        confirmOrder.setTrainCode(confirmOrderDoReq.getTrainCode());
+        confirmOrder.setStart(confirmOrderDoReq.getStart());
+        confirmOrder.setEnd(confirmOrderDoReq.getEnd());
+        confirmOrder.setDailyTrainTicketId(confirmOrderDoReq.getDailyTrainTicketId());
+        confirmOrder.setStatus(ConfirmOrderStatusEnum.INIT.getCode());
+        confirmOrder.setTickets(JSON.toJSONString(confirmOrderDoReq.getTickets()));
+        confirmOrderMapper.insert(confirmOrder);
+        // 查出余票记录，需要得到真实的库存
+
+        // 扣减余票数量，并判断余票是否足够
+
+        // 选座
+
+        // 一个车箱一个车箱的获取座位数据
+
+        // 挑选符合条件的座位，如果这个车箱不满足，则进入下个车箱（多个选座应该在同一个车厢）
+
+        // 选中座位后事务处理：
+
+        // 座位表修改售卖情况sell；
+        // 余票详情表修改余票；
+        // 为会员增加购票记录
+        // 更新确认订单为成功
     }
 }
