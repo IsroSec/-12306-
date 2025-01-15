@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * ClassName: ConfirmOrderController
  * Package: com.jiawa.train.business.controller
@@ -23,7 +25,7 @@ public class ConfirmOrderController {
     @Autowired
     private ConfirmOrderService confirmOrderService;
     @PostMapping("/do")
-    public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq confirmOrderDoReq) {
+    public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq confirmOrderDoReq) throws Exception {
         confirmOrderService.doConfirm(confirmOrderDoReq);
         return new CommonResp();
     }
