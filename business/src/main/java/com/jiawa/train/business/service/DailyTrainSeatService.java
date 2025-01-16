@@ -136,7 +136,7 @@ public class DailyTrainSeatService {
 
     public List<DailyTrainSeat> selectByCarriage(String trainCode, Integer carriageIndex,Date date) {
         DailyTrainSeatExample dailyTrainSeatExample = new DailyTrainSeatExample();
-        dailyTrainSeatExample.setOrderByClause("`id` asc");
+        dailyTrainSeatExample.setOrderByClause("carriage_seat_index asc");
         DailyTrainSeatExample.Criteria criteria = dailyTrainSeatExample.createCriteria();
         criteria.andTrainCodeEqualTo(trainCode)
                 .andCarriageIndexEqualTo(carriageIndex)
