@@ -58,6 +58,8 @@ public class ConfirmOrderService {
     private DailyTrainCarriageService dailyTrainCarriageService;
     @Autowired
     private DailyTrainSeatService dailyTrainSeatService;
+    @Autowired
+    private AfterConfirmOrderService afterConfirmOrderService;
     public void save(ConfirmOrderDoReq confirmOrderDoReq) {
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(confirmOrderDoReq, ConfirmOrder.class);
         DateTime now = DateTime.now();
@@ -182,7 +184,7 @@ public class ConfirmOrderService {
             }
         }
         LOG.info("最终选座结果：{}", finalSeatList);
-
+        afterConfirmOrderService.AfterDoConfirm(finalSeatList);
 
 
 
