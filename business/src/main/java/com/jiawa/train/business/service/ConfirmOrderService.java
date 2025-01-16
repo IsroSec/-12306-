@@ -126,6 +126,8 @@ public class ConfirmOrderService {
         // 扣减余票数量，并判断余票是否足够
         reduceTickets(tickets, dailyTrainTicket);
 
+        // 存放最终选座结果
+        List<DailyTrainSeat>finalSeatList=new ArrayList<>();
         //计算相对第一个位置的偏移值
         //比如选择的C1，C2,则偏移值是：【0，5】
         //比如选择的A1B1C1，则偏移值是：[0,1,2]
@@ -162,7 +164,8 @@ public class ConfirmOrderService {
             }
             LOG.info("相对偏移值：{}", offsetList);
             // 选座
-            getSeat(trainCode,
+            getSeat(finalSeatList,
+                    trainCode,
                     date,
                     ticketReq0.getSeatTypeCode(),
                     ticketReq0.getSeat().split("")[0],
@@ -173,11 +176,12 @@ public class ConfirmOrderService {
             LOG.info("本次购票不选座");
             // 选座
             for (ConfirmOrderTicketReq ticket : tickets){
-                getSeat(trainCode, date, ticket.getSeatTypeCode(), null, null,
+                getSeat(finalSeatList,trainCode, date, ticket.getSeatTypeCode(), null, null,
                         dailyTrainTicket.getStartIndex(),
                         dailyTrainTicket.getEndIndex());
             }
         }
+        LOG.info("最终选座结果：{}", finalSeatList);
 
 
 
@@ -229,7 +233,8 @@ public class ConfirmOrderService {
             return true;
         }
     }
-    private void getSeat(String trainCode, Date date,String seatType,String column,List<Integer> offsetList,Integer startIndex,Integer endIndex){
+    private void getSeat(List<DailyTrainSeat>finalSeatList,String trainCode, Date date,String seatType,String column,List<Integer> offsetList,Integer startIndex,Integer endIndex){
+        List<DailyTrainSeat> getSeatList=new ArrayList<>();
         // 一个车箱一个车箱的获取座位数据
         List<DailyTrainCarriage> dailyTrainCarriages = dailyTrainCarriageService.selectBySeatType(trainCode, date, seatType);
         LOG.info("车箱一共：{}", dailyTrainCarriages.size());
@@ -240,7 +245,19 @@ public class ConfirmOrderService {
             for (DailyTrainSeat dailyTrainSeat : dailyTrainSeats) {
                 //如果有选座的话判断是否和选择的列名相等
                 String col = dailyTrainSeat.getCol();
+                getSeatList=new ArrayList<>();
                 Integer seatIndex = dailyTrainSeat.getCarriageSeatIndex();
+                boolean alreadyChooseFlag=false;
+                for (DailyTrainSeat trainSeat : finalSeatList) {
+                    if (trainSeat.getId().equals(dailyTrainSeat.getId())){
+                        alreadyChooseFlag=true;
+                        break;
+                    }
+                }
+                if (alreadyChooseFlag){
+                    LOG.info("座位{}已被选中，继续判断下一个座位", seatIndex);
+                    continue;
+                }
                 if (StrUtil.isBlank(column)){
                     LOG.info("无选座");
                 }else {
@@ -253,6 +270,7 @@ public class ConfirmOrderService {
                 boolean isChooseSell = callSell(dailyTrainSeat, startIndex, endIndex);
                 if (isChooseSell){
                     LOG.info("座位被选中");
+                    getSeatList.add(dailyTrainSeat);
                 }else {
                     LOG.info("座位没被选中");
                     continue;
@@ -274,6 +292,7 @@ public class ConfirmOrderService {
                         boolean isChooseNext = callSell(nextDailyTrainSeat, startIndex, endIndex);
                         if (isChooseNext){
                             LOG.info("座位{}被选中", nextDailyTrainSeat.getCarriageSeatIndex());
+                            getSeatList.add(nextDailyTrainSeat);
                         }else {
                             LOG.info("座位{}不可选", nextDailyTrainSeat.getCarriageSeatIndex());
                             isGetAllOffsetSeat=false;
@@ -282,9 +301,11 @@ public class ConfirmOrderService {
                     }
                 }
                 if (!isGetAllOffsetSeat){
+                    getSeatList=new ArrayList<>();
                     continue;
                 }
                 //保存选好的座位
+                finalSeatList.addAll(getSeatList);
                 return;
             }
         }
