@@ -8,7 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.business.domain.DailyTrainTicket;
+import com.jiawa.train.business.domain.*;
 import com.jiawa.train.business.enums.ConfirmOrderStatusEnum;
 import com.jiawa.train.business.enums.SeatColEnum;
 import com.jiawa.train.business.enums.SeatTypeEnum;
@@ -18,8 +18,6 @@ import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
-import com.jiawa.train.business.domain.ConfirmOrder;
-import com.jiawa.train.business.domain.ConfirmOrderExample;
 import com.jiawa.train.business.mapper.ConfirmOrderMapper;
 import com.jiawa.train.business.req.ConfirmOrderQueryReq;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
@@ -54,6 +52,10 @@ public class ConfirmOrderService {
     private ConfirmOrderMapper confirmOrderMapper;
     @Autowired
     private DailyTrainTicketService dailyTrainTicketService;
+    @Autowired
+    private DailyTrainCarriageService dailyTrainCarriageService;
+    @Autowired
+    private DailyTrainSeatService dailyTrainSeatService;
     public void save(ConfirmOrderDoReq confirmOrderDoReq) {
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(confirmOrderDoReq, ConfirmOrder.class);
         DateTime now = DateTime.now();
@@ -157,12 +159,18 @@ public class ConfirmOrderService {
                 offsetList.add(offset);
             }
             LOG.info("相对偏移值：{}", offsetList);
+            // 选座
+            getSeat(trainCode, date, ticketReq0.getSeatTypeCode(), ticketReq0.getSeatTypeCode().split("")[0], offsetList);
         }else {
             LOG.info("本次购票不选座");
+            // 选座
+            for (ConfirmOrderTicketReq ticket : tickets){
+                getSeat(trainCode, date, ticket.getSeatTypeCode(), null, null);
+            }
         }
-        // 选座
 
-        // 一个车箱一个车箱的获取座位数据
+
+
 
         // 挑选符合条件的座位，如果这个车箱不满足，则进入下个车箱（多个选座应该在同一个车厢）
 
@@ -173,7 +181,16 @@ public class ConfirmOrderService {
         // 为会员增加购票记录
         // 更新确认订单为成功
     }
-
+    private void getSeat(String trainCode, Date date,String seatType,String column,List<Integer> offsetList){
+        // 一个车箱一个车箱的获取座位数据
+        List<DailyTrainCarriage> dailyTrainCarriages = dailyTrainCarriageService.selectBySeatType(trainCode, date, seatType);
+        LOG.info("车箱一共：{}", dailyTrainCarriages.size());
+        for (DailyTrainCarriage dailyTrainCarriage : dailyTrainCarriages) {
+            LOG.info("开始选车箱：{}", dailyTrainCarriage);
+            List<DailyTrainSeat> dailyTrainSeats = dailyTrainSeatService.selectByCarriage(trainCode, dailyTrainCarriage.getIndex(),date);
+            LOG.info("车厢{}座位一共：{}", dailyTrainCarriage.getIndex(), dailyTrainSeats.size());
+        }
+    }
     private static void reduceTickets(List<ConfirmOrderTicketReq> tickets, DailyTrainTicket dailyTrainTicket) {
         for (ConfirmOrderTicketReq ticketReq: tickets) {
             String seatTypeCode = ticketReq.getSeatTypeCode();

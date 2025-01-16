@@ -8,12 +8,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.business.domain.TrainSeat;
-import com.jiawa.train.business.domain.TrainStation;
+import com.jiawa.train.business.domain.*;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
-import com.jiawa.train.business.domain.DailyTrainSeat;
-import com.jiawa.train.business.domain.DailyTrainSeatExample;
 import com.jiawa.train.business.mapper.DailyTrainSeatMapper;
 import com.jiawa.train.business.req.DailyTrainSeatQueryReq;
 import com.jiawa.train.business.req.DailyTrainSeatSaveReq;
@@ -135,5 +132,15 @@ public class DailyTrainSeatService {
             return -1;
         }
         return (int) l;
+    }
+
+    public List<DailyTrainSeat> selectByCarriage(String trainCode, Integer carriageIndex,Date date) {
+        DailyTrainSeatExample dailyTrainSeatExample = new DailyTrainSeatExample();
+        dailyTrainSeatExample.setOrderByClause("`id` asc");
+        DailyTrainSeatExample.Criteria criteria = dailyTrainSeatExample.createCriteria();
+        criteria.andTrainCodeEqualTo(trainCode)
+                .andCarriageIndexEqualTo(carriageIndex)
+                .andDateEqualTo(date);
+        return dailyTrainSeatMapper.selectByExample(dailyTrainSeatExample);
     }
 }
