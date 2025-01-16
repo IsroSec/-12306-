@@ -84,7 +84,7 @@ public class AfterConfirmOrderService {
             //maxStartIndex：7-1=6
             //maxEndIndex：7+1=8
             //minEndIndex：4+1=5
-            //可以看到从最小3开始到最大8结束各种组合都会影响票，从最大6开始到最大8结束都会影响票，从最小3开始到最小5结束都会影响票
+            //可以看到从最小3开始逐渐增大到最大8结束各种组合都会影响票，从最大6开始到最大8结束都会影响票，从最小3开始到最小5结束都会影响票
             Integer startIndex = dailyTrainTicket.getStartIndex();
             Integer endIndex = dailyTrainTicket.getEndIndex();
             char[] chars = seatForUpdate.getSell().toCharArray();

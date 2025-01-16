@@ -22,6 +22,13 @@ const routes = [
         component: ()=> import( '../views/main/about.vue')
       },
       {
+        path: "member/",
+        children: [{
+          path: "ticket",
+          component: ()=> import( '../views/main/member/ticket.vue')
+        }]
+      },
+      {
         path: "base/",
         children:[{
           path: "station",

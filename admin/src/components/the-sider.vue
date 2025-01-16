@@ -8,6 +8,15 @@
     >
       <a-menu-item key="/welcome"><router-link to="/welcome">欢迎</router-link></a-menu-item>
       <a-menu-item key="/about"><router-link to="/about">关于</router-link></a-menu-item>
+      <a-sub-menu key="/member">
+        <template #title>
+          <span>
+            <UnorderedListOutlined/>
+            会员管理
+          </span>
+        </template>
+        <a-menu-item key="/member/member"><router-link to="/member/ticket"><MenuUnfoldOutlined/>会员车票</router-link></a-menu-item>
+      </a-sub-menu>
       <a-sub-menu key="business">
         <template #title>
           <span>
