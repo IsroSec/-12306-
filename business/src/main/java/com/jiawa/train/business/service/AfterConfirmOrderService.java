@@ -16,6 +16,7 @@ import com.jiawa.train.business.enums.SeatColEnum;
 import com.jiawa.train.business.enums.SeatTypeEnum;
 import com.jiawa.train.business.mapper.ConfirmOrderMapper;
 import com.jiawa.train.business.mapper.DailyTrainSeatMapper;
+import com.jiawa.train.business.mapper.cust.DailyTrainTicketMapperCust;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.business.req.ConfirmOrderQueryReq;
 import com.jiawa.train.business.req.ConfirmOrderTicketReq;
@@ -53,6 +54,8 @@ public class AfterConfirmOrderService {
     @Autowired
     private DailyTrainSeatMapper dailyTrainSeatMapper;
 
+    @Autowired
+    private DailyTrainTicketMapperCust dailyTrainTicketMapperCust;
     /**
      *  选中座位后事务处理：
      *
@@ -63,12 +66,54 @@ public class AfterConfirmOrderService {
      * @param finalSeatList
      */
     @Transactional
-    public void AfterDoConfirm(List<DailyTrainSeat> finalSeatList) {
+    public void AfterDoConfirm(DailyTrainTicket dailyTrainTicket,List<DailyTrainSeat> finalSeatList) {
         for (DailyTrainSeat dailyTrainSeat : finalSeatList) {
-            DailyTrainSeat trainSeat = new DailyTrainSeat();
-            trainSeat.setId(dailyTrainSeat.getId());
-            trainSeat.setSell(dailyTrainSeat.getSell());
-            dailyTrainSeatMapper.updateByPrimaryKeySelective(trainSeat);
+            DailyTrainSeat seatForUpdate = new DailyTrainSeat();
+            seatForUpdate.setId(dailyTrainSeat.getId());
+            seatForUpdate.setSell(dailyTrainSeat.getSell());
+            dailyTrainSeatMapper.updateByPrimaryKeySelective(seatForUpdate);
+
+            //计算这个站卖出去后，影响了哪些站的余票库存
+            //影响的库存：没卖过票的，和本次购买的区间有交集的区间
+            //假设10个站，本次买4~7站
+            //原售：001000001
+            //购买：000011100
+            //新售：001011101
+            //影响：XXX11111X
+            //minStartIndex：4-1=3
+            //maxStartIndex：7-1=6
+            //maxEndIndex：7+1=8
+            //minEndIndex：4+1=5
+            //可以看到从最小3开始到最大8结束各种组合都会影响票，从最大6开始到最大8结束都会影响票，从最小3开始到最小5结束都会影响票
+            Integer startIndex = dailyTrainTicket.getStartIndex();
+            Integer endIndex = dailyTrainTicket.getEndIndex();
+            char[] chars = seatForUpdate.getSell().toCharArray();
+            Integer maxStartIndex = endIndex - 1;
+            Integer minEndIndex = startIndex + 1;
+            Integer minStartIndex=0;
+            for (int i=startIndex-1;i>=0;i--){
+                char aChar = chars[i];
+                if (aChar=='1'){
+                    minStartIndex=i+1;
+                    break;
+                }
+            }
+            LOG.info("影响出发站区间："+minStartIndex+"-"+maxStartIndex);
+            Integer maxEndIndex=seatForUpdate.getSell().length();
+            for (int i=endIndex;i<seatForUpdate.getSell().length();i++){
+                char aChar = chars[i];
+                if (aChar=='1'){
+                    maxEndIndex=i;
+                    break;
+                }
+            }
+            LOG.info("影响到达站区间："+minEndIndex+"-"+maxEndIndex);
+
+            dailyTrainTicketMapperCust.updateCountBySell(dailyTrainSeat.getDate(),
+                    dailyTrainSeat.getTrainCode(),
+                    dailyTrainSeat.getSeatType(),
+                    minStartIndex,
+                    maxStartIndex,minEndIndex,maxEndIndex);
         }
     }
 

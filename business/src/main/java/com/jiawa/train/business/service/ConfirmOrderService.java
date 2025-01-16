@@ -184,7 +184,7 @@ public class ConfirmOrderService {
             }
         }
         LOG.info("最终选座结果：{}", finalSeatList);
-        afterConfirmOrderService.AfterDoConfirm(finalSeatList);
+        afterConfirmOrderService.AfterDoConfirm(dailyTrainTicket,finalSeatList);
 
 
 
