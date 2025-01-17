@@ -37,5 +37,14 @@ public class TicketAdminController {
         return new CommonResp();
     }
 
-
+    @GetMapping("/query-list")
+    public CommonResp<PageResp<TicketQueryResp>> queryList(@Valid  TicketQueryReq ticketQueryReq) {
+        //这里拿到localthread的id
+        return new CommonResp<>(ticketService.queryList(ticketQueryReq));
+    }
+    @DeleteMapping("/delete/{id}")
+    public CommonResp<Object> delete(@PathVariable Long id) {
+        ticketService.delete(id);
+        return new CommonResp<>();
+    }
 }
