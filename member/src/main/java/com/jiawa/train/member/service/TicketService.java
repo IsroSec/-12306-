@@ -51,7 +51,9 @@ public class TicketService {
         ticketExample.setOrderByClause("id desc");
         TicketExample.Criteria criteria = ticketExample.createCriteria();
     //这里构造一下查询条件
-
+        if (ObjectUtil.isNotNull(ticketQueryReq.getMemberId())){
+            criteria.andMemberIdEqualTo(ticketQueryReq.getMemberId());
+        }
         LOG.info("查询页码：{}", ticketQueryReq.getPage());
         LOG.info("每页条数：{}", ticketQueryReq.getSize());
         PageHelper.startPage(ticketQueryReq.getPage(), ticketQueryReq.getSize());
