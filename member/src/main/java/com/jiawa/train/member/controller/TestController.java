@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RefreshScope
 public class TestController {
     @GetMapping("/hello")
-    public void main(String args[]) {
-        System.out.println("Hello World!");
+    public String main(String args[]) {
+        return "hello  nacos";
     }
     @Value("${test.nacos}")
     private String name;
