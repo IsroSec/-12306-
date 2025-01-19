@@ -69,11 +69,17 @@ public class DailyTrainTicketService {
     }
 
     @CachePut(value = "DailyTrainTicketService.queryList")
+    public PageResp<DailyTrainTicketQueryResp> queryList3(DailyTrainTicketQueryReq dailyTrainTicketQueryReq){
+        LOG.info("测试缓存穿透");
+        return null;
+    }
+    @CachePut(value = "DailyTrainTicketService.queryList")
     public PageResp<DailyTrainTicketQueryResp> queryList2(DailyTrainTicketQueryReq dailyTrainTicketQueryReq){
         return queryList(dailyTrainTicketQueryReq);
     }
     @Cacheable(value = "DailyTrainTicketService.queryList")
     public PageResp<DailyTrainTicketQueryResp> queryList(DailyTrainTicketQueryReq dailyTrainTicketQueryReq) {
+        //分布式锁防止缓存穿透，防止高并发的缓存击穿
         DailyTrainTicketExample dailyTrainTicketExample = new DailyTrainTicketExample();
         dailyTrainTicketExample.setOrderByClause("id desc");
         DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();

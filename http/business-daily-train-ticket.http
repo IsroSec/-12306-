@@ -4,3 +4,6 @@ Content-Type: application/json
 ###
 GET http://localhost:8000/business/admin/daily-train-ticket/query-list2?page=1&size=5&trainCode=G1&start=宁波&end=绍兴
 Content-Type: application/json
+###
+GET http://localhost:8000/business/admin/daily-train-ticket/query-list3?page=1&size=5&trainCode=G1&start=宁波&end=绍兴
+Content-Type: application/json
