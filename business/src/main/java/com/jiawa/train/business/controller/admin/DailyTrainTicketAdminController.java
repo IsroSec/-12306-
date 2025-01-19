@@ -41,6 +41,13 @@ public class DailyTrainTicketAdminController {
         //这里拿到localthread的id
         return new CommonResp<>(dailyTrainTicketService.queryList(dailyTrainTicketQueryReq));
     }
+
+    @GetMapping("/query-list2")
+    public CommonResp<PageResp<DailyTrainTicketQueryResp>> queryList2(@Valid  DailyTrainTicketQueryReq dailyTrainTicketQueryReq) {
+        //这里拿到localthread的id
+        return new CommonResp<>(dailyTrainTicketService.queryList2(dailyTrainTicketQueryReq));
+    }
+
     @DeleteMapping("/delete/{id}")
     public CommonResp<Object> delete(@PathVariable Long id) {
         dailyTrainTicketService.delete(id);

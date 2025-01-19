@@ -24,6 +24,8 @@ import com.jiawa.train.business.resp.DailyTrainTicketQueryResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -66,6 +68,11 @@ public class DailyTrainTicketService {
         }
     }
 
+    @CachePut(value = "DailyTrainTicketService.queryList")
+    public PageResp<DailyTrainTicketQueryResp> queryList2(DailyTrainTicketQueryReq dailyTrainTicketQueryReq){
+        return queryList(dailyTrainTicketQueryReq);
+    }
+    @Cacheable(value = "DailyTrainTicketService.queryList")
     public PageResp<DailyTrainTicketQueryResp> queryList(DailyTrainTicketQueryReq dailyTrainTicketQueryReq) {
         DailyTrainTicketExample dailyTrainTicketExample = new DailyTrainTicketExample();
         dailyTrainTicketExample.setOrderByClause("id desc");
