@@ -88,10 +88,10 @@ public class ServerGenerator {
         param.put("readOnly", readOnly);
         System.out.println("map = " + param);
 
-        gen(Domain, param,"service","service");
-        gen(Domain, param,"controller/admin","AdminController");
+//        gen(Domain, param,"service","service");
+//        gen(Domain, param,"controller/admin","AdminController");
         gen(Domain, param,"req","saveReq");
-        gen(Domain, param, "req", "queryReq");
+//        gen(Domain, param, "req", "queryReq");
         gen(Domain, param, "resp", "queryResp");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
