@@ -99,7 +99,7 @@ public class ConfirmOrderService {
         confirmOrderMapper.deleteByPrimaryKey(id);
     }
 
-    public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq) throws Exception {
+    public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq)  {
         // 省略业务数据校验，如：车次是否存在，余票是否存在，车次是否在有效期内，tickets条数>0，同乘客同车次是否已买过
 
         // 保存确认订单表，状态初始
@@ -184,8 +184,12 @@ public class ConfirmOrderService {
             }
         }
         LOG.info("最终选座结果：{}", finalSeatList);
-        afterConfirmOrderService.AfterDoConfirm(dailyTrainTicket,finalSeatList,tickets,confirmOrder);
-
+        try {
+            afterConfirmOrderService.AfterDoConfirm(dailyTrainTicket,finalSeatList,tickets,confirmOrder);
+        } catch (Exception e) {
+            LOG.error("保存购票信息失败",e);
+            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
+        }
 
 
         // 挑选符合条件的座位，如果这个车箱不满足，则进入下个车箱（多个选座应该在同一个车厢）

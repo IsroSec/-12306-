@@ -14,6 +14,7 @@ import com.jiawa.train.member.mapper.TicketMapper;
 import com.jiawa.train.member.req.TicketQueryReq;
 import com.jiawa.train.member.req.TicketSaveReq;
 import com.jiawa.train.member.resp.TicketQueryResp;
+import io.seata.core.context.RootContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class TicketService {
     @Autowired
     private TicketMapper ticketMapper;
     public void save(MemberTicketReq req) {
+        LOG.info("seata事务全局ID：{}", RootContext.getXID());
         Ticket ticket = BeanUtil.copyProperties(req, Ticket.class);
         DateTime now = DateTime.now();
             ticket.setId(SnowUtil.getSnowflakeNextId());
