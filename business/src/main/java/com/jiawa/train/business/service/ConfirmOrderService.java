@@ -66,7 +66,8 @@ public class ConfirmOrderService {
     @Autowired
     private AfterConfirmOrderService afterConfirmOrderService;
     @Autowired
-    private RedissonClient redissonClient;
+//    private RedissonClient redissonClient;
+    private RedisTemplate redisTemplate;
     public void save(ConfirmOrderDoReq confirmOrderDoReq) {
         ConfirmOrder confirmOrder = BeanUtil.copyProperties(confirmOrderDoReq, ConfirmOrder.class);
         DateTime now = DateTime.now();
@@ -109,29 +110,29 @@ public class ConfirmOrderService {
     public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq)  {
         // 省略业务数据校验，如：车次是否存在，余票是否存在，车次是否在有效期内，tickets条数>0，同乘客同车次是否已买过
         String localKey= DateUtil.formatDate(confirmOrderDoReq.getDate())+"-"+confirmOrderDoReq.getTrainCode();
-//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(localKey, localKey, 5, TimeUnit.SECONDS);
-//        if (aBoolean){
-//            LOG.info("加锁成功:{}",localKey);
-//        }else {
-//            LOG.info("加锁失败:{}",localKey);
-//            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
-//        }
-        RLock lock=null;
+        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(localKey, localKey, 5, TimeUnit.SECONDS);
+        if (aBoolean){
+            LOG.info("加锁成功:{}",localKey);
+        }else {
+            LOG.info("加锁失败:{}",localKey);
+            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
+        }
+//        RLock lock=null;
         try {
-            lock = redissonClient.getLock(localKey);
-            /**
-             * waitTime-the maximum time to acquire the lock 等待获取锁时间(最大尝试获得锁的时间)，超时返回false
-             * LeaseTime-leasetime锁时长，即n秒后自动释放锁
-             * time unit-time unit 时间单位
-             */
-            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);//看门狗
-//        boolean tryLock = lock.tryLock(30,10, TimeUnit.SECONDS);看门狗
-            if (tryLock){
-                LOG.info("加锁成功:{}",localKey);
-            }else {
-                LOG.info("加锁失败:{}",localKey);
-                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
-            }
+//            lock = redissonClient.getLock(localKey);
+//            /**
+//             * waitTime-the maximum time to acquire the lock 等待获取锁时间(最大尝试获得锁的时间)，超时返回false
+//             * LeaseTime-leasetime锁时长，即n秒后自动释放锁
+//             * time unit-time unit 时间单位
+//             */
+//            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);//看门狗
+////        boolean tryLock = lock.tryLock(30,10, TimeUnit.SECONDS);看门狗
+//            if (tryLock){
+//                LOG.info("加锁成功:{}",localKey);
+//            }else {
+//                LOG.info("加锁失败:{}",localKey);
+//                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
+//            }
             // 保存确认订单表，状态初始
             Date date = confirmOrderDoReq.getDate();
             String trainCode = confirmOrderDoReq.getTrainCode();
@@ -221,13 +222,12 @@ public class ConfirmOrderService {
                 throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION);
             }
 //        redisTemplate.delete(localKey);
-        } catch (InterruptedException e) {
-            LOG.error("购票异常",e);
-        } finally {
+        }  finally {
             LOG.info("释放分布式锁：{}", localKey);
-            if (null != lock && lock.isHeldByCurrentThread()){
-                lock.unlock();
-            }
+            redisTemplate.delete(localKey);
+//            if (null != lock && lock.isHeldByCurrentThread()){
+//                lock.unlock();
+//            }
         }
 
 

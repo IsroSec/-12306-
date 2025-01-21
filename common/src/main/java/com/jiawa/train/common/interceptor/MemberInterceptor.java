@@ -23,6 +23,7 @@ public class MemberInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        LOG.info("会员拦截器");
         //获取header的token参数
         String token = request.getHeader("token");
         if (StrUtil.isNotBlank(token)) {
@@ -32,6 +33,7 @@ public class MemberInterceptor implements HandlerInterceptor {
             MemberLoginResp member = JSONUtil.toBean(loginMember, MemberLoginResp.class);
             LoginMemberContext.setMember(member);
         }
+        LOG.info("会员拦截器结束");
         return true;
     }
 
