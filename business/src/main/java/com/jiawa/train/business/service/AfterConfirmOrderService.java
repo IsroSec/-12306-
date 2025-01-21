@@ -151,9 +151,10 @@ public class AfterConfirmOrderService {
             confirmOrderForUpdate.setUpdateTime(new Date());
             confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
             //模拟全局事务出现异常
-            if (1==1){
-                throw  new Exception("测试异常");
-            }
+//            Thread.sleep(10000);
+//            if (1==1){
+//                throw  new Exception("测试异常");
+//            }
         }
     }
 
