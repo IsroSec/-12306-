@@ -8,6 +8,8 @@ import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -25,8 +27,8 @@ import com.jiawa.train.business.mapper.ConfirmOrderMapper;
 import com.jiawa.train.business.req.ConfirmOrderQueryReq;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.business.resp.ConfirmOrderQueryResp;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+//import org.redisson.api.RLock;
+//import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -107,6 +110,7 @@ public class ConfirmOrderService {
         confirmOrderMapper.deleteByPrimaryKey(id);
     }
 
+    @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
     public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq)  {
         // 省略业务数据校验，如：车次是否存在，余票是否存在，车次是否在有效期内，tickets条数>0，同乘客同车次是否已买过
         String localKey= DateUtil.formatDate(confirmOrderDoReq.getDate())+"-"+confirmOrderDoReq.getTrainCode();
@@ -239,6 +243,16 @@ public class ConfirmOrderService {
         // 余票详情表修改余票；
         // 为会员增加购票记录
         // 更新确认订单为成功
+    }
+
+    /**
+     * 降级方法，需包含限流方法的所有参数和blockException参数
+     * @param confirmOrderDoReq
+     * @param e
+     */
+    private void doConfirmBlock(ConfirmOrderDoReq confirmOrderDoReq, BlockException e){
+        LOG.info("限流了");
+        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION);
     }
 
     /**
