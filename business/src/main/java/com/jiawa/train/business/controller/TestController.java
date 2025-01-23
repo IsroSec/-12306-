@@ -22,12 +22,12 @@ public class TestController {
     private TestService testService;
     @SentinelResource("hello")
     @GetMapping("/hello")
-    public String hello() {
+    public String hello() throws InterruptedException {
         return testService.hello2();
     }
     @SentinelResource("hello1")
     @GetMapping("/hello1")
-    public String hello1() {
+    public String hello1() throws InterruptedException {
         return testService.hello2();
     }
 }

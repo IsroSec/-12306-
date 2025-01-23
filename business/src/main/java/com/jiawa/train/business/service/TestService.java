@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestService {
     @SentinelResource("hello2")
-    public String hello2() {
+    public String hello2() throws InterruptedException {
+        Thread.sleep(5000);
         return "hello222222";
     }
 }
