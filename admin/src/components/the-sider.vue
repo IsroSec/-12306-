@@ -30,6 +30,7 @@
         <a-menu-item key="/business/daily_train_station"><router-link to="/business/daily-train-station">每日车站</router-link></a-menu-item>
         <a-menu-item key="/business/daily_train_carriage"><router-link to="/business/daily-train-carriage">每日车厢</router-link></a-menu-item>
         <a-menu-item key="/business/daily_train_seat"><router-link to="/business/daily-train-seat">每日座位</router-link></a-menu-item>
+        <a-menu-item key="/business/sk_token"><router-link to="/business/sk-token">令牌余量</router-link></a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="base">
         <template #title>

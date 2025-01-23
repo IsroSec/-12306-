@@ -24,22 +24,22 @@ import java.util.*;
  */
 public class ServerGenerator {
 
-    static boolean readOnly = true;
+    static boolean readOnly = false;
     static String vuePath = "admin/src/views/main/";
 
     static String servicePath="[module]/src/main/java/com/jiawa/train/[module]/";
     static String pomPath="generator\\pom.xml";
     static String module="";
-    static {
-        new File(servicePath).mkdirs();
-    }
+//    static {
+//        new File(servicePath).mkdirs();
+//    }
     public static void main(String[] args) throws Exception {
         String generatorPath = getGeneratorPath();
 
         module=generatorPath.replace("src/main/resources/generator-config-", "").replace(".xml", "");
         System.out.println("module: " + module);
         servicePath=servicePath.replace("[module]", module);
-        // new File(servicePath).mkdirs();
+         new File(servicePath).mkdirs();
         System.out.println("servicePath: " + servicePath);
 
         Document document = new SAXReader().read("generator/" + generatorPath);
@@ -88,10 +88,10 @@ public class ServerGenerator {
         param.put("readOnly", readOnly);
         System.out.println("map = " + param);
 
-//        gen(Domain, param,"service","service");
-//        gen(Domain, param,"controller/admin","AdminController");
+        gen(Domain, param,"service","service");
+        gen(Domain, param,"controller/admin","AdminController");
         gen(Domain, param,"req","saveReq");
-//        gen(Domain, param, "req", "queryReq");
+        gen(Domain, param, "req", "queryReq");
         gen(Domain, param, "resp", "queryResp");
 //        FreemarkerUtil.initConfig("test.ftl");
 //        HashMap<String, Object> param = new HashMap<>();
