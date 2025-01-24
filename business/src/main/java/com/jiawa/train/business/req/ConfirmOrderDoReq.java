@@ -60,8 +60,17 @@ public class ConfirmOrderDoReq {
     @NotEmpty(message = "【车票】不能为空")
     private List<ConfirmOrderTicketReq> tickets;
 
+    /**
+     * 验证码
+     */
+    @NotBlank(message = "【验证码】不能为空")
+    private String imageCode;
 
-
+    /**
+     * 图片验证码token
+     */
+    @NotBlank(message = "【图片验证码token】不能为空")
+    private String imageCodeToken;
 
     public Long getMemberId() {
         return memberId;
@@ -112,6 +121,14 @@ public class ConfirmOrderDoReq {
     }
 
 
+    public List<ConfirmOrderTicketReq> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<ConfirmOrderTicketReq> tickets) {
+        this.tickets = tickets;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("ConfirmOrderDoReq{");
@@ -122,15 +139,25 @@ public class ConfirmOrderDoReq {
         sb.append(", end='").append(end).append('\'');
         sb.append(", dailyTrainTicketId=").append(dailyTrainTicketId);
         sb.append(", tickets=").append(tickets);
+        sb.append(", imageCode='").append(imageCode).append('\'');
+        sb.append(", imageCodeToken='").append(imageCodeToken).append('\'');
         sb.append('}');
         return sb.toString();
     }
 
-    public List<ConfirmOrderTicketReq> getTickets() {
-        return tickets;
+    public String getImageCode() {
+        return imageCode;
     }
 
-    public void setTickets(List<ConfirmOrderTicketReq> tickets) {
-        this.tickets = tickets;
+    public void setImageCode(String imageCode) {
+        this.imageCode = imageCode;
+    }
+
+    public String getImageCodeToken() {
+        return imageCodeToken;
+    }
+
+    public void setImageCodeToken(String imageCodeToken) {
+        this.imageCodeToken = imageCodeToken;
     }
 }

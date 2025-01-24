@@ -257,7 +257,22 @@ export default defineComponent({
         }
       })
     };
-
+    /*--------------验证码--------------*/
+    const imageCodeModalVisible=ref();
+    const imageCodeToken=ref();
+    const imageCodeSrc=ref();
+    const imageCode=ref();
+    /**
+     * 加载图形验证码
+     */
+    const loadImageCode=()=>{
+      imageCodeToken.value=Tool.uuid(8);
+      imageCodeSrc.value=process.env.VUE_APP_SERVER+'/business/kaptcha/image-code/'+imageCodeToken.value;
+    };
+    const showImageCodeModal=()=>{
+      loadImageCode();
+      imageCodeModalVisible.value=true;
+    }
     const handleOk = () => {
       if(Tool.isEmpty(imageCode.value)){
         notification.error({description: "请输入验证码"});
@@ -295,7 +310,9 @@ export default defineComponent({
         trainCode: dailyTrainTicket.trainCode,
         start: dailyTrainTicket.start,
         end: dailyTrainTicket.end,
-        tickets: tickets.value
+        tickets: tickets.value,
+        imageCodeToken: imageCodeToken.value,
+        imageCode: imageCode.value
       }).then((response) => {
         let data = response.data;
         if (data.success) {
@@ -304,23 +321,6 @@ export default defineComponent({
           notification.error({description: data.message});
         }
       });
-    }
-
-    /*--------------验证码--------------*/
-    const imageCodeModalVisible=ref();
-    const imageCodeToken=ref();
-    const imageCodeSrc=ref();
-    const imageCode=ref();
-    /**
-     * 加载图形验证码
-     */
-    const loadImageCode=()=>{
-      imageCodeToken.value=Tool.uuid(8);
-      imageCodeSrc.value=process.env.VUE_APP_SERVER+'/business/kaptcha/image-code/'+imageCodeToken.value;
-    };
-    const showImageCodeModal=()=>{
-      loadImageCode();
-      imageCodeModalVisible.value=true;
     }
       onMounted(()=>{
       handleQueryPassengers();
