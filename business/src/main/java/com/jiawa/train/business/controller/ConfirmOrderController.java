@@ -5,6 +5,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.business.service.AfterConfirmOrderService;
 import com.jiawa.train.business.service.ConfirmOrderService;
+import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.resp.CommonResp;
@@ -36,6 +37,7 @@ public class ConfirmOrderController {
     @SentinelResource(value = "confirmOrderDo", blockHandler = "confirmOrderDoBlock")
     @PostMapping("/do")
     public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq confirmOrderDoReq) throws Exception {
+        confirmOrderDoReq.setMemberId(LoginMemberContext.getId());
         confirmOrderService.doConfirm(confirmOrderDoReq);
         return new CommonResp();
     }
