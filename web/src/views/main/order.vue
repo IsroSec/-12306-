@@ -52,7 +52,7 @@
   <a-modal v-model:visible="visible" title="请核对以下信息"
            style="top: 50px; width: 800px"
            ok-text="确认" cancel-text="取消"
-           @ok="showImageCodeModal">
+           @ok="showFirstImageCodeModal">
     <div class="order-tickets">
       <a-row class="order-tickets-header" v-if="tickets.length > 0">
         <a-col :span="3">乘客</a-col>
@@ -99,9 +99,12 @@
 <!--      最终选座：{{chooseSeatObj}}-->
     </div>
   </a-modal>
+<!--  第二层验证码 后端-->
   <a-modal v-model:visible="imageCodeModalVisible" :closable="false" :footer="null" :title="null"
            style="top:50px;width: 400px">
     <p style="text-align: center;font-weight: bold;font-size: 18px">使用验证码削弱瞬时高峰</p>
+    使用服务端验证码削弱瞬时高峰<br/>
+    防止机器人刷票
     <p>
       <a-input v-model:value="imageCode" placeholder="图片验证码">
         <template #suffix>
@@ -110,6 +113,21 @@
       </a-input>
     </p>
     <a-button block type="danger" @click="handleOk">输入验证码后开始购票</a-button>
+  </a-modal>
+<!--  第一层验证码 纯前端-->
+  <a-modal v-model:visible="firstImageCodeModalVisible" :closable="false" :footer="null" :title="null"
+           style="top: 50px;width: 400px">
+    <p style="text-align: center;font-weight: bold;font-size: 18px">使用验证码削弱瞬时高峰</p>
+    使用纯前端验证码削弱瞬时高峰<br/>
+    减小验证码接口的压力
+    <p>
+      <a-input v-model:value="firstImageCodeTarget" placeholder="图片验证码">
+        <template #suffix>
+          {{firstImageCodeSourceA}}+{{firstImageCodeSourceB}}
+        </template>
+      </a-input>
+    </p>
+    <a-button block type="danger" @click="validFirstImageCode">输入验证码后开始购票</a-button>
   </a-modal>
 </template>
 
@@ -273,6 +291,38 @@ export default defineComponent({
       loadImageCode();
       imageCodeModalVisible.value=true;
     }
+    /*----------第一层验证码-----------*/
+    const firstImageCodeModalVisible=ref();
+    const firstImageCodeSourceA=ref();
+    const firstImageCodeSourceB=ref();
+    const firstImageCodeTarget=ref();
+    /**
+     * 加载第一层验证码
+     */
+    const loadFirstImageCode=()=>{
+      //获取1~10的数：Math.floor(Math.random*10+1)
+      firstImageCodeSourceA.value=Math.floor(Math.random()*10+1)+10;
+      firstImageCodeSourceB.value=Math.floor(Math.random()*10+1)+20;
+    };
+    /**
+     * 显示第一层验证码弹出框
+     */
+    const showFirstImageCodeModal=()=>{
+      loadFirstImageCode();
+      firstImageCodeModalVisible.value=true;
+    }
+    /**
+     * 校验第一层验证码
+     */
+    const validFirstImageCode=()=>{
+      if (parseInt(firstImageCodeTarget.value)===parseInt(firstImageCodeSourceA.value+firstImageCodeSourceB.value)){
+        //第一层验证通过
+        firstImageCodeModalVisible.value=false;
+        showImageCodeModal()
+      }else {
+        notification.error({description: '验证码错误'});
+      }
+    }
     const handleOk = () => {
       if(Tool.isEmpty(imageCode.value)){
         notification.error({description: "请输入验证码"});
@@ -343,7 +393,13 @@ export default defineComponent({
       imageCodeModalVisible,
       imageCode,
       loadImageCode,
-      imageCodeSrc
+      imageCodeSrc,
+      showFirstImageCodeModal,
+      firstImageCodeModalVisible,
+      firstImageCodeSourceA,
+      firstImageCodeSourceB,
+      firstImageCodeTarget,
+      validFirstImageCode
     }
   }
 });
