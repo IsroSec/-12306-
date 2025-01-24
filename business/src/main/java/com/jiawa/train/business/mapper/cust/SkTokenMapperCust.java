@@ -12,5 +12,5 @@ import java.util.Date;
  * @Version 1.0
  */
 public interface SkTokenMapperCust {
-    int decrease(Date date, String trainCode);
+    int decrease(Date date, String trainCode,int decreaseCount);
 }

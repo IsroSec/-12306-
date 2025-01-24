@@ -1,13 +1,16 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.business.enums.LockKeyPreEnum;
+import com.jiawa.train.business.enums.RedisKeyPreEnum;
 import com.jiawa.train.business.mapper.cust.SkTokenMapperCust;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.business.domain.SkToken;
@@ -49,7 +52,7 @@ public class SkTokenService {
     @Autowired
     private SkTokenMapperCust skTokenMapperCust;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String,String> redisTemplate;
     public void save(SkTokenSaveReq skTokenSaveReq) {
         SkToken skToken = BeanUtil.copyProperties(skTokenSaveReq, SkToken.class);
         DateTime now = DateTime.now();
@@ -124,7 +127,7 @@ public class SkTokenService {
     public boolean validSkToken(String trainCode,Date date,Long memberId) {
         LOG.info("会员【{}】获取日期【{}】车次【{}】的令牌开始",memberId,date,trainCode);
         //获取令牌锁，再进行校验令牌余量，防止刷票
-        String lockKey = LockKeyPreEnum.SK_TOKEN +"-"+DateUtil.formatDate(date) + "-" + trainCode;
+        String lockKey = RedisKeyPreEnum.SK_TOKEN +"-"+DateUtil.formatDate(date) + "-" + trainCode;
         Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
         if (setIfAbsent){
             LOG.info("获取令牌锁成功");
@@ -132,11 +135,51 @@ public class SkTokenService {
             LOG.info("获取令牌锁失败");
             return false;
         }
-        int updateCount=skTokenMapperCust.decrease(date,trainCode);
-        if (updateCount>0){
-            return true;
+        //我们改成使用redis
+        String skTokenCountKey = RedisKeyPreEnum.SK_TOKEN_COUNT + "-" + DateUtil.formatDate(date) + trainCode;
+        Object skTokenCount = redisTemplate.opsForValue().get(skTokenCountKey);
+        if (skTokenCount!=null){
+            LOG.info("令牌余量为【{}】",skTokenCount);
+            Long count = redisTemplate.opsForValue().decrement(skTokenCountKey, 1);
+            if (count<0L){
+                LOG.error("获取令牌失败：{}",count);
+                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_FAIL);
+            }else {
+                LOG.info("获取令牌成功：{}",count);
+                redisTemplate.expire(skTokenCountKey,60,TimeUnit.SECONDS);
+                if (count%5==0){
+                    skTokenMapperCust.decrease(date,trainCode,5);
+                }
+                return true;
+            }
         }else {
-            return false;
+            //第一次没有缓存的话
+            LOG.info("缓存中没有该车次令牌大闸的key:{}",skTokenCountKey);
+            //先做检查数据库中的令牌是否有余量
+            SkTokenExample skTokenExample = new SkTokenExample();
+            skTokenExample.createCriteria().andDateEqualTo(date).andTrainCodeEqualTo(trainCode);
+            List<SkToken> tokenCountList = skTokenMapper.selectByExample(skTokenExample);
+            if (CollUtil.isEmpty(tokenCountList)){
+                LOG.info("找不到日期【{}】车次【{}】的令牌记录",date,trainCode);
+                return false;
+            }
+            SkToken skToken = tokenCountList.get(0);
+            if (skToken.getCount()<=0){
+                LOG.error("获取令牌失败：{}",skToken.getCount());
+                return false;
+            }
+            //如果令牌还有余量，则减一放入redis中
+            Integer count = skToken.getCount() - 1;
+            LOG.info("将改车次的令牌大闸放入缓存中,key:{},count:{}",skTokenCountKey,count);
+            redisTemplate.opsForValue().set(skTokenCountKey,String.valueOf(count),60,TimeUnit.SECONDS);
+            return true;
         }
+        //频繁访问数据库
+//        int updateCount=skTokenMapperCust.decrease(date,trainCode);
+//        if (updateCount>0){
+//            return true;
+//        }else {
+//            return false;
+//        }
     }
 }
