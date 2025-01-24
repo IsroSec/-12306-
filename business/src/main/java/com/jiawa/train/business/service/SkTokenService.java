@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.business.mapper.cust.SkTokenMapperCust;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.business.domain.SkToken;
@@ -41,6 +42,8 @@ public class SkTokenService {
     private DailyTrainSeatService dailyTrainSeatService;
     @Autowired
     private DailyTrainStationService dailyTrainStationService;
+    @Autowired
+    private SkTokenMapperCust skTokenMapperCust;
     public void save(SkTokenSaveReq skTokenSaveReq) {
         SkToken skToken = BeanUtil.copyProperties(skTokenSaveReq, SkToken.class);
         DateTime now = DateTime.now();
@@ -110,5 +113,15 @@ public class SkTokenService {
         skToken.setCount(count);
 
         skTokenMapper.insert(skToken);
+    }
+
+    public boolean validSkToken(String trainCode,Date date,Long memberId) {
+        LOG.info("会员【{}】获取日期【{}】车次【{}】的令牌开始",memberId,date,trainCode);
+        int updateCount=skTokenMapperCust.decrease(date,trainCode);
+        if (updateCount>0){
+            return true;
+        }else {
+            return false;
+        }
     }
 }
