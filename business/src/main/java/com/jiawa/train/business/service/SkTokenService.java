@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,10 @@ public class SkTokenService {
 
     @Autowired
     private SkTokenMapper skTokenMapper;
+    @Autowired
+    private DailyTrainSeatService dailyTrainSeatService;
+    @Autowired
+    private DailyTrainStationService dailyTrainStationService;
     public void save(SkTokenSaveReq skTokenSaveReq) {
         SkToken skToken = BeanUtil.copyProperties(skTokenSaveReq, SkToken.class);
         DateTime now = DateTime.now();
@@ -73,5 +78,37 @@ public class SkTokenService {
     }
     public void delete(Long id) {
         skTokenMapper.deleteByPrimaryKey(id);
+    }
+
+    public void genDaily(Date date,String trainCode){
+        LOG.info("删除日期【{}】车次【{}】的令牌记录",date,trainCode);
+        SkTokenExample skTokenExample = new SkTokenExample();
+        skTokenExample.createCriteria()
+                .andDateEqualTo(date)
+                .andTrainCodeEqualTo(trainCode);
+        skTokenMapper.deleteByExample(skTokenExample);
+
+        //删了之后重新生成
+        DateTime now = DateTime.now();
+        SkToken skToken = new SkToken();
+        skToken.setId(SnowUtil.getSnowflakeNextId());
+        skToken.setDate(date);
+        skToken.setTrainCode(trainCode);
+        skToken.setCreateTime(now);
+        skToken.setUpdateTime(now);
+
+        //统计一下每辆车的座位数
+        int seatCount=dailyTrainSeatService.countSeat(date,trainCode);
+        LOG.info("车次【{}】座位数【{}】",trainCode,seatCount);
+        //统计一下每一站的座位数
+        int stationCount=dailyTrainStationService.countByTrainCode(date,trainCode);
+        LOG.info("车次【{}】站点数【{}】",trainCode,stationCount);
+
+        //需要根据实际卖票比例来定，一趟火车最多可以卖（seatCount*stationCount）
+        int count =(seatCount*stationCount*3/4);
+        LOG.info("车次【{}】令牌数【{}】",trainCode,count);
+        skToken.setCount(count);
+
+        skTokenMapper.insert(skToken);
     }
 }

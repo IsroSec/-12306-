@@ -2,7 +2,7 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">刷新</a-button>
-      <a-button type="primary" @click="onAdd">新增</a-button>
+<!--      <a-button type="primary" @click="onAdd">新增</a-button>-->
     </a-space>
   </p>
   <a-table :columns="columns"
@@ -13,13 +13,13 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
         <a-space>
-          <a-popconfirm
-              cancel-text="取消"
-              ok-text="确认"
-              title="删除后不可恢复，确认删除?" @confirm="onDelete(record)">
-            <a style="color: red">删除</a>
-          </a-popconfirm>
-          <a @click="onEdit(record)">编辑</a>
+<!--          <a-popconfirm-->
+<!--              cancel-text="取消"-->
+<!--              ok-text="确认"-->
+<!--              title="删除后不可恢复，确认删除?" @confirm="onDelete(record)">-->
+<!--            <a style="color: red">删除</a>-->
+<!--          </a-popconfirm>-->
+          <a @click="onEdit(record)">修改令牌数量</a>
         </a-space>
       </template>
     </template>
@@ -28,7 +28,7 @@
            title="秒杀令牌" @ok="handleOk">
     <a-form :label-col="{span: 4}" :model="skToken" :wrapper-col="{ span: 20 }">
       <a-form-item label="日期">
-        <a-date-picker v-model:value="skToken.date" placeholder="请选择日期" valueFormat="YYYY-MM-DD" />
+        <a-date-picker v-model:value="skToken.date" disabled placeholder="请选择日期" valueFormat="YYYY-MM-DD"/>
       </a-form-item>
       <a-form-item label="车次编号">
         <a-input v-model:value="skToken.trainCode" />
