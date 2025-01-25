@@ -130,8 +130,9 @@ public class ConfirmOrderService {
         if (aBoolean){
             LOG.info("加锁成功:{}",localKey);
         }else {
-            LOG.info("加锁失败:{}",localKey);
-            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
+            LOG.info("没抢到锁，有其他消费者使用:{}",localKey);
+//            throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_EXCEPTION_FAIL);
+            return;
         }
         try {
         while (true){
