@@ -5,9 +5,11 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.jiawa.train.business.enums.RedisKeyPreEnum;
+import com.jiawa.train.business.enums.RocketMQTopicEnum;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class BeforeConfirmOrderService {
     private RedisTemplate redisTemplate;
     @Autowired
     private SkTokenService skTokenService;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
     @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
     public void doConfirm(ConfirmOrderDoReq confirmOrderDoReq) {
         //校验令牌余量
@@ -55,7 +59,8 @@ public class BeforeConfirmOrderService {
         //通过rocketmq发送异步请求
         String reqJson = JSON.toJSONString(confirmOrderDoReq);
         LOG.info("排队购票，发送mq开始，消息：{}", reqJson);
-
+        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(),reqJson);
+        LOG.info("排队购票，发送mq结束");
     }
 
     private void doConfirmBlock(ConfirmOrderDoReq confirmOrderDoReq, BlockException e){
