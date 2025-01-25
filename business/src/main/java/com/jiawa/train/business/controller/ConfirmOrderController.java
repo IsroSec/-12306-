@@ -5,6 +5,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.jiawa.train.business.req.ConfirmOrderDoReq;
 import com.jiawa.train.business.service.AfterConfirmOrderService;
+import com.jiawa.train.business.service.BeforeConfirmOrderService;
 import com.jiawa.train.business.service.ConfirmOrderService;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.exception.BusinessException;
@@ -37,6 +38,8 @@ public class ConfirmOrderController {
     private ConfirmOrderService confirmOrderService;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private BeforeConfirmOrderService beforeConfirmOrderService;
     //接口资源名不要和接口路径一致，会导致限流后走不到降级方法中
     @SentinelResource(value = "confirmOrderDo", blockHandler = "confirmOrderDoBlock")
     @PostMapping("/do")
@@ -57,7 +60,7 @@ public class ConfirmOrderController {
             redisTemplate.delete(imageCodeToken);
         }
         confirmOrderDoReq.setMemberId(LoginMemberContext.getId());
-        confirmOrderService.doConfirm(confirmOrderDoReq);
+        beforeConfirmOrderService.doConfirm(confirmOrderDoReq);
         return new CommonResp();
     }
 
