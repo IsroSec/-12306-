@@ -174,6 +174,14 @@ public class ConfirmOrderService {
         // 更新确认订单为成功
     }
 
+    public void updateStatus(ConfirmOrder confirmOrder){
+        ConfirmOrder confirmOrderForUpdate = new ConfirmOrder();
+        confirmOrderForUpdate.setId(confirmOrder.getId());
+        confirmOrderForUpdate.setUpdateTime(new Date());
+        confirmOrderForUpdate.setStatus(confirmOrder.getStatus());
+        confirmOrderMapper.updateByPrimaryKeySelective(confirmOrderForUpdate);
+    }
+
     private void sell(ConfirmOrder confirmOrder) {
 
 //            lock = redissonClient.getLock(localKey);
@@ -202,6 +210,10 @@ public class ConfirmOrderService {
             confirmOrderDoReq.setImageCode("");
             confirmOrderDoReq.setImageCodeToken("");
             confirmOrderDoReq.setMDC("");
+            // 将订单设置成处理中，避免重复处理
+            LOG.info("将订单设置成处理中，避免重复处理,订单：{}", confirmOrder.getId());
+            confirmOrder.setStatus(ConfirmOrderStatusEnum.PENDING.getCode());
+            updateStatus(confirmOrder);
             // 保存确认订单表，状态初始
             Date date = confirmOrderDoReq.getDate();
             String trainCode = confirmOrderDoReq.getTrainCode();
