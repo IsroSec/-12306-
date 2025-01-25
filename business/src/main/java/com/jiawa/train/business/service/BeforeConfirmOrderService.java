@@ -6,6 +6,7 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.jiawa.train.business.domain.ConfirmOrder;
+import com.jiawa.train.business.dto.ConfirmOrderMQDto;
 import com.jiawa.train.business.enums.ConfirmOrderStatusEnum;
 import com.jiawa.train.business.enums.RedisKeyPreEnum;
 import com.jiawa.train.business.enums.RocketMQTopicEnum;
@@ -89,8 +90,11 @@ public class BeforeConfirmOrderService {
         confirmOrder.setTickets(JSON.toJSONString(tickets));
         confirmOrderMapper.insert(confirmOrder);
         //通过rocketmq发送异步请求
-        confirmOrderDoReq.setMDC(MDC.get("LOG_ID"));
-        String reqJson = JSON.toJSONString(confirmOrderDoReq);
+        ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto();
+        confirmOrderMQDto.setMDC(MDC.get("LOG_ID"));
+        confirmOrderMQDto.setDate(date);
+        confirmOrderMQDto.setTrainCode(trainCode);
+        String reqJson = JSON.toJSONString(confirmOrderMQDto);
         LOG.info("排队购票，发送mq开始，消息：{}", reqJson);
         rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(),reqJson);
         LOG.info("排队购票，发送mq结束");
