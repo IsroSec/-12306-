@@ -151,7 +151,19 @@ public class ConfirmOrderService {
                 LOG.info("本次处理{}条确认订单",list.size());
             }
             //一条一条的卖
-            list.forEach(this::sell);
+            list.forEach(confirmOrder1 -> {
+                try {
+                    sell(confirmOrder1);
+                }catch (BusinessException e){
+                    if (e.getE().equals(BusinessExceptionEnum.CONFIRM_ORDER_TICKET_COUNT_ERROR)){
+                    LOG.info("本订单余票不足，请继续下一个订单");
+                    confirmOrder1.setStatus(ConfirmOrderStatusEnum.EMPTY.getCode());
+                    updateStatus(confirmOrder1);
+                    }else {
+                        throw e;
+                    }
+                }
+            });
         }
 
     }  finally {
