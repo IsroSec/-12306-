@@ -72,6 +72,16 @@ public class ConfirmOrderDoReq {
     @NotBlank(message = "【图片验证码token】不能为空")
     private String imageCodeToken;
 
+    private String MDC;
+
+    public String getMDC() {
+        return MDC;
+    }
+
+    public void setMDC(String MDC) {
+        this.MDC = MDC;
+    }
+
     public Long getMemberId() {
         return memberId;
     }
