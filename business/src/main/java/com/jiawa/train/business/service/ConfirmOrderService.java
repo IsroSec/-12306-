@@ -35,9 +35,11 @@ import com.jiawa.train.business.resp.ConfirmOrderQueryResp;
 //import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -114,8 +116,11 @@ public class ConfirmOrderService {
         confirmOrderMapper.deleteByPrimaryKey(id);
     }
 
+    @Async
     @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
     public void doConfirm(ConfirmOrderMQDto dto)  {
+        MDC.put("LOG_ID",dto.getMDC());
+        LOG.info("异步出票开始:{}",dto);
 //        //校验令牌余量
 //        boolean validSkToken=skTokenService.validSkToken(confirmOrderDoReq.getTrainCode(),confirmOrderDoReq.getDate(),confirmOrderDoReq.getMemberId());
 //        if (validSkToken){
@@ -196,11 +201,12 @@ public class ConfirmOrderService {
     }
 
     private void sell(ConfirmOrder confirmOrder) {
-        try {
-            Thread.sleep(200);
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }
+//        更好的显示排队的效果s
+//        try {
+//            Thread.sleep(200);
+//        }catch (InterruptedException e){
+//            e.printStackTrace();
+//        }
 
 //            lock = redissonClient.getLock(localKey);
 //            /**

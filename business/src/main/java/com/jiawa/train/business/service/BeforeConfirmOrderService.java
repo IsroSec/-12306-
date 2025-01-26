@@ -17,7 +17,7 @@ import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.util.SnowUtil;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+//import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -46,10 +46,12 @@ public class BeforeConfirmOrderService {
     private RedisTemplate redisTemplate;
     @Autowired
     private SkTokenService skTokenService;
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
+//    @Autowired
+//    private RocketMQTemplate rocketMQTemplate;
     @Autowired
     private ConfirmOrderMapper confirmOrderMapper;
+    @Autowired
+    private ConfirmOrderService confirmOrderService;
     @SentinelResource(value = "doConfirm", blockHandler = "doConfirmBlock")
     public Long doConfirm(ConfirmOrderDoReq confirmOrderDoReq) {
         confirmOrderDoReq.setMemberId(LoginMemberContext.getId());
@@ -95,9 +97,10 @@ public class BeforeConfirmOrderService {
         confirmOrderMQDto.setDate(date);
         confirmOrderMQDto.setTrainCode(trainCode);
         String reqJson = JSON.toJSONString(confirmOrderMQDto);
-        LOG.info("排队购票，发送mq开始，消息：{}", reqJson);
-        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(),reqJson);
-        LOG.info("排队购票，发送mq结束");
+//        LOG.info("排队购票，发送mq开始，消息：{}", reqJson);
+//        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getCode(),reqJson);
+//        LOG.info("排队购票，发送mq结束");
+        confirmOrderService.doConfirm(confirmOrderMQDto);
         return confirmOrder.getId();
     }
 
