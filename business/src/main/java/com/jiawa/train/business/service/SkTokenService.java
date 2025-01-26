@@ -22,6 +22,7 @@ import com.jiawa.train.business.resp.SkTokenQueryResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,9 @@ public class SkTokenService {
     private SkTokenMapperCust skTokenMapperCust;
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
+
+    @Value("${spring.profiles.active}")
+    private String env;
     public void save(SkTokenSaveReq skTokenSaveReq) {
         SkToken skToken = BeanUtil.copyProperties(skTokenSaveReq, SkToken.class);
         DateTime now = DateTime.now();
@@ -126,15 +130,18 @@ public class SkTokenService {
 
     public boolean validSkToken(String trainCode,Date date,Long memberId) {
         LOG.info("会员【{}】获取日期【{}】车次【{}】的令牌开始",memberId,date,trainCode);
-        //获取令牌锁，再进行校验令牌余量，防止刷票
-        String lockKey = RedisKeyPreEnum.SK_TOKEN +"-"+DateUtil.formatDate(date) + "-" + trainCode;
-        Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
-        if (setIfAbsent){
-            LOG.info("获取令牌锁成功");
-        }else {
-            LOG.info("获取令牌锁失败");
-            return false;
+        if (!env.equals("dev")){
+            //获取令牌锁，再进行校验令牌余量，防止刷票
+            String lockKey = RedisKeyPreEnum.SK_TOKEN +"-"+DateUtil.formatDate(date) + "-" + trainCode;
+            Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+            if (setIfAbsent){
+                LOG.info("获取令牌锁成功");
+            }else {
+                LOG.info("获取令牌锁失败");
+                return false;
+            }
         }
+
         //我们改成使用redis
         String skTokenCountKey = RedisKeyPreEnum.SK_TOKEN_COUNT + "-" + DateUtil.formatDate(date) + trainCode;
         Object skTokenCount = redisTemplate.opsForValue().get(skTokenCountKey);

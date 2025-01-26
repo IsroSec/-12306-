@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,24 +41,29 @@ public class ConfirmOrderController {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private BeforeConfirmOrderService beforeConfirmOrderService;
+
+    @Value("${spring.profiles.active}")
+    private String env;
     //接口资源名不要和接口路径一致，会导致限流后走不到降级方法中
     @SentinelResource(value = "confirmOrderDo", blockHandler = "confirmOrderDoBlock")
     @PostMapping("/do")
     public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq confirmOrderDoReq) throws Exception {
-        //图片验证码校验
-        String imageCode = confirmOrderDoReq.getImageCode();
-        String imageCodeToken = confirmOrderDoReq.getImageCodeToken();
-        String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
-        LOG.info("从redis中获取到验证码：{}",imageCodeRedis);
-        if (ObjectUtil.isEmpty(imageCodeRedis)){
-            return new CommonResp<>(false,"验证码已过期",null);
-        }
-        //验证码校验，大小写忽略，提升体验，比如Oo Vv Ww容易混淆
-        if (!imageCode.equalsIgnoreCase(imageCodeRedis)){
-            return new CommonResp<>(false,"验证码错误",null);
-        }else {
-            //验证通过，移除验证码
-            redisTemplate.delete(imageCodeToken);
+        if (!env.equals("dev")){
+            //图片验证码校验
+            String imageCode = confirmOrderDoReq.getImageCode();
+            String imageCodeToken = confirmOrderDoReq.getImageCodeToken();
+            String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
+            LOG.info("从redis中获取到验证码：{}",imageCodeRedis);
+            if (ObjectUtil.isEmpty(imageCodeRedis)){
+                return new CommonResp<>(false,"验证码已过期",null);
+            }
+            //验证码校验，大小写忽略，提升体验，比如Oo Vv Ww容易混淆
+            if (!imageCode.equalsIgnoreCase(imageCodeRedis)){
+                return new CommonResp<>(false,"验证码错误",null);
+            }else {
+                //验证通过，移除验证码
+                redisTemplate.delete(imageCodeToken);
+            }
         }
         confirmOrderDoReq.setMemberId(LoginMemberContext.getId());
         beforeConfirmOrderService.doConfirm(confirmOrderDoReq);
