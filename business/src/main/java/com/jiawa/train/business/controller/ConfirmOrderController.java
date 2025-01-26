@@ -66,8 +66,8 @@ public class ConfirmOrderController {
             }
         }
         confirmOrderDoReq.setMemberId(LoginMemberContext.getId());
-        beforeConfirmOrderService.doConfirm(confirmOrderDoReq);
-        return new CommonResp();
+        Long doConfirm = beforeConfirmOrderService.doConfirm(confirmOrderDoReq);
+        return new CommonResp(String.valueOf(doConfirm));
     }
 
 

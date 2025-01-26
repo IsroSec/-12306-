@@ -132,7 +132,7 @@
   <a-modal v-model:visible="lineModalVisible" :footer="null" :title="null"
            style="top: 50px;width: 400px">
     <div class="book-line">
-      <loading-outlined />系统正在处理中，请稍等...
+      <loading-outlined />确认订单：{{confirmOrderId}}系统正在处理中，请稍等...
     </div>
   </a-modal>
 </template>
@@ -331,6 +331,7 @@ export default defineComponent({
     }
 
     const lineModalVisible=ref();
+    const confirmOrderId=ref();
     const handleOk = () => {
       if(Tool.isEmpty(imageCode.value)){
         notification.error({description: "请输入验证码"});
@@ -378,6 +379,7 @@ export default defineComponent({
           visible.value=false;
           imageCodeModalVisible.value=false;
           lineModalVisible.value=true;
+          confirmOrderId.value=data.content;
         } else {
           notification.error({description: data.message});
         }
@@ -411,7 +413,8 @@ export default defineComponent({
       firstImageCodeSourceB,
       firstImageCodeTarget,
       validFirstImageCode,
-      lineModalVisible
+      lineModalVisible,
+      confirmOrderId
     }
   }
 });
