@@ -70,6 +70,11 @@ public class ConfirmOrderController {
         return new CommonResp(String.valueOf(doConfirm));
     }
 
+    @GetMapping("/query-line-count/{id}")
+    public CommonResp<Object> queryLineCount(@PathVariable Long id){
+        Integer lineCount = confirmOrderService.queryLineCount(id);
+        return new CommonResp(lineCount);
+    }
 
     private CommonResp<Object> confirmOrderDoBlock(ConfirmOrderDoReq confirmOrderDoReq, BlockException e){
       LOG.info("controller限流了");

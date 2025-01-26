@@ -196,6 +196,11 @@ public class ConfirmOrderService {
     }
 
     private void sell(ConfirmOrder confirmOrder) {
+        try {
+            Thread.sleep(200);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
 
 //            lock = redissonClient.getLock(localKey);
 //            /**
@@ -528,4 +533,34 @@ public class ConfirmOrderService {
 
     }
 
-}
+    /**
+     * 查询前面有几个订单正在排队
+     */
+    public Integer queryLineCount(Long id){
+        ConfirmOrder confirmOrder = confirmOrderMapper.selectByPrimaryKey(id);
+        ConfirmOrderStatusEnum statusEnum = EnumUtil.getBy(ConfirmOrderStatusEnum::getCode, confirmOrder.getStatus());
+        int result=switch (statusEnum){
+            case PENDING -> 0;
+            case SUCCESS -> -1;
+            case FAILURE -> -2;
+            case EMPTY -> -3;
+            case CANCEL -> -4;
+            case INIT -> 999;
+        };
+        if (result==999){
+            ConfirmOrderExample confirmOrderExample = new ConfirmOrderExample();
+            confirmOrderExample.or().andDateEqualTo(confirmOrder.getDate())
+                    .andTrainCodeEqualTo(confirmOrder.getTrainCode())
+                    .andCreateTimeLessThan(confirmOrder.getCreateTime())
+                    .andStatusEqualTo(ConfirmOrderStatusEnum.INIT.getCode());
+            confirmOrderExample.or().andDateEqualTo(confirmOrder.getDate())
+                    .andTrainCodeEqualTo(confirmOrder.getTrainCode())
+                    .andCreateTimeLessThan(confirmOrder.getCreateTime())
+                    .andStatusEqualTo(ConfirmOrderStatusEnum.PENDING.getCode());
+            return Math.toIntExact(confirmOrderMapper.countByExample(confirmOrderExample));
+        }else {
+            return result;
+        }
+        }
+    }
+

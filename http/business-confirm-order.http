@@ -4,3 +4,8 @@ Content-Type: application/json
 token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3Mzc0NjI0NDUsIm1vYmlsZSI6IjEzMDAwMDAwMDAwIiwiaWQiOjE4NzIyNDU5MjU5Mzg4NjAwMzIsImV4cCI6MTczNzU0ODg0NSwiaWF0IjoxNzM3NDYyNDQ1fQ.O5HxCsYHfHWTVrsKVBgbMcx7D3Bvq2BO0XlwxlwMvm8
 
 {"dailyTrainTicketId":1879832475161726976,"date":1736956800000,"end":"杭州","start":"绍兴","tickets":[{"passengerId":1873373413142302720,"passengerIdCard":"330225","passengerName":"xn","passengerType":"2","seatTypeCode":"1"},{"passengerId":1873406801043656704,"passengerIdCard":"330225","passengerName":"奚侃琦","passengerType":"1","seatTypeCode":"1"}],"trainCode":"G1"}
+
+###
+GET http://localhost:8000/business/confirm-order/query-line-count/1883154916206317568
+Content-Type: application/json
+token:{{token}}

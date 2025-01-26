@@ -131,8 +131,11 @@
   </a-modal>
   <a-modal v-model:visible="lineModalVisible" :footer="null" :title="null"
            style="top: 50px;width: 400px">
-    <div class="book-line">
+    <div v-show="confirmOrderLineCount <0">
       <loading-outlined />确认订单：{{confirmOrderId}}系统正在处理中，请稍等...
+    </div>
+    <div v-show="confirmOrderLineCount >=0">
+      <loading-outlined />在您之前还有：{{confirmOrderLineCount}}人排队
     </div>
   </a-modal>
 </template>
@@ -380,10 +383,46 @@ export default defineComponent({
           imageCodeModalVisible.value=false;
           lineModalVisible.value=true;
           confirmOrderId.value=data.content;
+          queryLineCount();
         } else {
           notification.error({description: data.message});
         }
       });
+    }
+
+    let queryLineCountInterval;
+    const confirmOrderLineCount=ref(-1);
+    const queryLineCount=()=>{
+      confirmOrderLineCount.value=-1;
+      queryLineCountInterval=setInterval(()=>{
+        axios.get("/business/confirm-order/query-line-count/"+confirmOrderId.value).then((response)=>{
+          let data=response.data;
+          if (data.success){
+            let result=data.content;
+            switch (result){
+              case -1:
+                notification.success({description: "购票成功"});
+                lineModalVisible.value=false;
+                clearInterval(queryLineCountInterval);
+                break;
+              case -2:
+                notification.success({description: "购票失败"});
+                lineModalVisible.value=false;
+                clearInterval(queryLineCountInterval);
+                break;
+              case -3:
+                notification.success({description: "抱歉没票了"});
+                lineModalVisible.value=false;
+                clearInterval(queryLineCountInterval);
+                break;
+              default:
+                confirmOrderLineCount.value=result;
+            }
+          }else {
+            notification.error({description: data.message})
+          }
+        })
+      }, 500);
     }
       onMounted(()=>{
       handleQueryPassengers();
@@ -414,7 +453,9 @@ export default defineComponent({
       firstImageCodeTarget,
       validFirstImageCode,
       lineModalVisible,
-      confirmOrderId
+      confirmOrderId,
+      queryLineCount,
+      confirmOrderLineCount
     }
   }
 });
