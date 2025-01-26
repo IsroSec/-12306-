@@ -129,6 +129,12 @@
     </p>
     <a-button block type="danger" @click="validFirstImageCode">输入验证码后开始购票</a-button>
   </a-modal>
+  <a-modal v-model:visible="lineModalVisible" :footer="null" :title="null"
+           style="top: 50px;width: 400px">
+    <div class="book-line">
+      <loading-outlined />系统正在处理中，请稍等...
+    </div>
+  </a-modal>
 </template>
 
 <script>
@@ -323,6 +329,8 @@ export default defineComponent({
         notification.error({description: '验证码错误'});
       }
     }
+
+    const lineModalVisible=ref();
     const handleOk = () => {
       if(Tool.isEmpty(imageCode.value)){
         notification.error({description: "请输入验证码"});
@@ -366,7 +374,10 @@ export default defineComponent({
       }).then((response) => {
         let data = response.data;
         if (data.success) {
-          notification.success({description: "下单成功！"});
+          // notification.success({description: "下单成功！"});
+          visible.value=false;
+          imageCodeModalVisible.value=false;
+          lineModalVisible.value=true;
         } else {
           notification.error({description: data.message});
         }
@@ -399,7 +410,8 @@ export default defineComponent({
       firstImageCodeSourceA,
       firstImageCodeSourceB,
       firstImageCodeTarget,
-      validFirstImageCode
+      validFirstImageCode,
+      lineModalVisible
     }
   }
 });
